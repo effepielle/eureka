@@ -69,7 +69,6 @@ def compute_query(site_name,wikidata_id):
         predicate_string += ").\n"
         predicate_string = re.sub(",\s*\)\.", ").", predicate_string)
         f.write(predicate_string)
-        print(predicate_string)
     f.close()
 
 def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
