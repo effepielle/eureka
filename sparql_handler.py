@@ -1,6 +1,6 @@
-import numpy as np
-from SPARQLWrapper import SPARQLWrapper, JSON
+import re
 import pandas as pd
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 sparql = SPARQLWrapper("https://query.wikidata.org/bigdata/namespace/wdq/sparql")
 
@@ -10,7 +10,11 @@ def main():
         "park": "Q22698",
         "public_garden": "Q55177716",
         "city_walls": "Q16748868",
-        "church_building": "Q16970"
+        "church_building": "Q16970",
+        "square": "Q174782",
+        "cultural_event": "Q58687420",
+        "museum":"Q33506",
+        "monument":"Q4989906"
         #TODO: add more items
     }
 
@@ -56,17 +60,16 @@ def compute_query(site_name,wikidata_id):
                                                         row["site.value"].split('http://www.wikidata.org/entity/')[1],
                                                         row["siteLabel.value"], row["siteLat.value"],
                                                         row["siteLon.value"])
-        if 'siteAccessibilityLabel.value' in results_df:
-            if pd.notna(row["siteAccessibilityLabel.value"]):
-                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-            else:
-                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorId.value' in results_df:
+        if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
+            predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+        if 'siteTripAdvisorId.value' in results_df and pd.notna(["siteTripAdvisorId.value"]):
             predicate_string += "{}, ".format(row["siteTripAdvisorId.value"])
-        if 'siteImage.value' in results_df:
+        if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
             predicate_string += "\"{}\"".format(row["siteImage.value"])
         predicate_string += ").\n"
+        predicate_string = re.sub(",\s*\)\.", ").", predicate_string)
         f.write(predicate_string)
+        print(predicate_string)
     f.close()
 
 def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
@@ -100,16 +103,14 @@ def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
                                                        row["site.value"].split('http://www.wikidata.org/entity/')[1],
                                                        row["siteLabel.value"], lat, lon)
 
-        if 'siteAccessibilityLabel.value' in results_df:
-            if pd.notna(row["siteAccessibilityLabel.value"]):
-                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-            else:
-                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorId.value' in results_df:
+        if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
+            predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+        if 'siteTripAdvisorId.value' in results_df and pd.notna(["siteTripAdvisorId.value"]):
             predicate_string += "{}, ".format(row["siteTripAdvisorId.value"])
-        if 'siteImage.value' in results_df:
+        if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
             predicate_string += "\"{}\"".format(row["siteImage.value"])
         predicate_string += ").\n"
+        predicate_string = re.sub(",+\)\.",").",predicate_string)
         f.write(predicate_string)
     f.close()
 
