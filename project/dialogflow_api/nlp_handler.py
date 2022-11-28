@@ -1,5 +1,5 @@
 from google.cloud import dialogflow_v2 as dialogflow
-from config import DIALOGFLOW_PROJECT_ID, DIALOGFLOW_LANGUAGE_CODE
+from project.config import DIALOGFLOW_PROJECT_ID, DIALOGFLOW_LANGUAGE_CODE
 
 def analyze_input(session_id, message_text):
     session_client = dialogflow.SessionsClient()
@@ -10,6 +10,4 @@ def analyze_input(session_id, message_text):
 
     response = session_client.detect_intent(session=session, query_input=query_input)
 
-    print(response)
-
-analyze_input('123456', 'hello!')
+    return response.query_result.fulfillment_text
