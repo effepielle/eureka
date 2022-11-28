@@ -1,5 +1,5 @@
 from google.cloud import dialogflow_v2 as dialogflow
-from project.config import DIALOGFLOW_PROJECT_ID, DIALOGFLOW_LANGUAGE_CODE
+from project.config_files.config import DIALOGFLOW_PROJECT_ID, DIALOGFLOW_LANGUAGE_CODE
 
 def analyze_input(session_id, message_text):
     session_client = dialogflow.SessionsClient()

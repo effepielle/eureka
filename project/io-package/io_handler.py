@@ -1,6 +1,6 @@
 import telebot
 from project.dialogflow_api import nlp_handler as nlp
-from project.config import TELEGRAM_TOKEN
+from project.config_files.config import TELEGRAM_TOKEN
 
 # for testing: https://t.me/eurekachatbot
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
