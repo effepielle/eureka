@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append('../eureka')
 import telebot
 from project.dialogflow_api import nlp_handler as nlp
 from project.config_files.config import TELEGRAM_TOKEN
