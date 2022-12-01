@@ -1,4 +1,6 @@
 import re
+import random
+
 import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -81,11 +83,14 @@ def compute_query(site_name,wikidata_id):
             predicate_string += "{}, ".format(np.nan)
         if 'siteImage.value' in results_df:
             if pd.notna(row["siteImage.value"]):
-                predicate_string += "\"{}\"".format(row["siteImage.value"])
+                predicate_string += "\"{}\",".format(row["siteImage.value"])
             else:
-                predicate_string += "{}".format(row["siteImage.value"])
+                predicate_string += "{},".format(row["siteImage.value"])
         else:
-            predicate_string += "{} ".format(np.nan)
+            predicate_string += "{}, ".format(np.nan)
+
+        #random generated star
+        predicate_string += "{}".format(random.randrange(6))
         predicate_string += ").\n"
         predicate_string = re.sub(",+\)\.",").",predicate_string)
         f.write(predicate_string)
@@ -136,11 +141,15 @@ def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
             predicate_string += "{}, ".format(np.nan)
         if 'siteImage.value' in results_df:
             if pd.notna(row["siteImage.value"]):
-                predicate_string += "\"{}\"".format(row["siteImage.value"])
+                predicate_string += "\"{}\",".format(row["siteImage.value"])
             else:
-                predicate_string += "{}".format(row["siteImage.value"])
+                predicate_string += "{},".format(row["siteImage.value"])
         else:
-            predicate_string += "{} ".format(np.nan)
+            predicate_string += "{}, ".format(np.nan)
+
+        # random generated star
+        predicate_string += "{}".format(random.randrange(6))
+
         predicate_string += ").\n"
         predicate_string = re.sub(",+\)\.", ").", predicate_string)
         f.write(predicate_string)
