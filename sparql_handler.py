@@ -64,6 +64,7 @@ def compute_query(site_name,wikidata_id):
     f = open("KB.pl", 'a+', encoding='utf8')
     for index, row in results_df.iterrows():
         i = INITIAL_VALUE
+
         predicate_string = "{}(\"{}\", \"{}\", {}, {}, ".format(site_name,
                                                         row["site.value"].split('http://www.wikidata.org/entity/')[1],
                                                         row["siteLabel.value"], row["siteLat.value"],
@@ -71,15 +72,14 @@ def compute_query(site_name,wikidata_id):
         if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
             i += 1
             predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorId.value' in results_df and pd.notna(row["siteTripAdvisorId.value"]):
+        if 'siteTripAdvisorIdLabel.value' in results_df and pd.notna(row["siteTripAdvisorIdLabel.value"]):
             i += 1
-            predicate_string += "{}, ".format(row["siteTripAdvisorId.value"])
+            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
         if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
             i += 1
             predicate_string += "\"{}\"".format(row["siteImage.value"])
         predicate_string += ").\n"
         predicate_string = re.sub(",\s*\)\.", ").", predicate_string)
-
         #for optimization reasons, we need to order fact by their arity
         if i == INITIAL_VALUE:
             facts_dict["facts/4"].append(predicate_string)
@@ -133,9 +133,9 @@ def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
         if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
             i += 1
             predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorId.value' in results_df and pd.notna(row["siteTripAdvisorId.value"]):
+        if 'siteTripAdvisorIdLabel.value' in results_df and pd.notna(row["siteTripAdvisorIdLabel.value"]):
             i += 1
-            predicate_string += "{}, ".format(row["siteTripAdvisorId.value"])
+            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
         if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
             i += 1
             predicate_string += "\"{}\"".format(row["siteImage.value"])
