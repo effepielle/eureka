@@ -4,8 +4,9 @@ import re
 DIALOGFLOW_PROJECT_ID = 'eureka-wlon'
 DIALOGFLOW_LANGUAGE_CODE = 'en'
 
-#change needed because cd is in "...\project\io-package" and there is no .json in it
+#change needed because of ide compatibility issues
 def custom_abs_path(file):
+    #simply truncate everything beyond eureka directory
     subdir = re.sub("eureka.*","eureka/project/config_files",os.getcwd())
     os.chdir(subdir)
     return os.path.abspath(file)
