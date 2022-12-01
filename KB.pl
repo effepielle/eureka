@@ -1,3 +1,5 @@
+:-include("rules.pl").
+
 park("Q4011005", "Viale delle Piagge (Pisa)", 43.7053, 10.4202, nan, 10638421, "http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%2C%202015%2C%20Viale%20delle%20Piagge.jpg",1).
 public_garden("Q3678366", "Cittadella Nuova", 43.710406, 10.406252, nan, nan, "http://commons.wikimedia.org/wiki/Special:FilePath/Giardino%20di%20Scotto%2C%20galleria%2002.JPG",4).
 city_walls("Q3328004", "city walls of Pisa", 43.72518845930142, 10.39367112698515, nan, nan, "http://commons.wikimedia.org/wiki/Special:FilePath/Mura%20di%20Pisa%2C%20Vista%20da%20Largo%20Zan%20Zeno.jpg",1).
