@@ -1,8 +1,11 @@
 import re
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
+import sys
 
-sparql = SPARQLWrapper("https://query.wikidata.org/bigdata/namespace/wdq/sparql")
+#agent to use sparql endpoint
+user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
+sparql = SPARQLWrapper("https://query.wikidata.org/bigdata/namespace/wdq/sparql", agent=user_agent)
 
 def main():
     # WikiData Item Name - WikiData Item ID
