@@ -1,9 +1,9 @@
 import re
+import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 import sys
 
-INITIAL_VALUE=4
 #agent to use sparql endpoint
 user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
 sparql = SPARQLWrapper("https://query.wikidata.org/bigdata/namespace/wdq/sparql", agent=user_agent)
@@ -32,7 +32,6 @@ def main():
 
 def compute_query(site_name,wikidata_id):
 
-    facts_dict = {"facts/4":[], "facts/5":[], "facts/6":[], "facts/7":[]}
     sparql.setQuery("""
     SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
     {
@@ -63,42 +62,37 @@ def compute_query(site_name,wikidata_id):
 
     f = open("KB.pl", 'a+', encoding='utf8')
     for index, row in results_df.iterrows():
-        i = INITIAL_VALUE
 
         predicate_string = "{}(\"{}\", \"{}\", {}, {}, ".format(site_name,
                                                         row["site.value"].split('http://www.wikidata.org/entity/')[1],
                                                         row["siteLabel.value"], row["siteLat.value"],
                                                         row["siteLon.value"])
-        if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
-            i += 1
-            predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorIdLabel.value' in results_df and pd.notna(row["siteTripAdvisorIdLabel.value"]):
-            i += 1
-            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
-        if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
-            i += 1
-            predicate_string += "\"{}\"".format(row["siteImage.value"])
-        predicate_string += ").\n"
-        predicate_string = re.sub(",\s*\)\.", ").", predicate_string)
-        #for optimization reasons, we need to order fact by their arity
-        if i == INITIAL_VALUE:
-            facts_dict["facts/4"].append(predicate_string)
-        elif i == INITIAL_VALUE+1:
-            facts_dict["facts/5"].append(predicate_string)
-        elif i == INITIAL_VALUE+2:
-            facts_dict["facts/6"].append(predicate_string)
-        elif i == INITIAL_VALUE+3:
-            facts_dict["facts/7"].append(predicate_string)
 
-    for key in facts_dict.keys():
-        for fact_string in facts_dict[key]:
-            f.write(fact_string)
+        if 'siteAccessibilityLabel.value' in results_df:
+            if pd.notna(row["siteAccessibilityLabel.value"]):
+                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+            else:
+                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
+        else:
+            predicate_string += "{}, ".format(np.nan)
+        if 'siteTripAdvisorIdLabel.value' in results_df:
+            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
+        else:
+            predicate_string += "{}, ".format(np.nan)
+        if 'siteImage.value' in results_df:
+            if pd.notna(row["siteImage.value"]):
+                predicate_string += "\"{}\"".format(row["siteImage.value"])
+            else:
+                predicate_string += "{}".format(row["siteImage.value"])
+        else:
+            predicate_string += "{} ".format(np.nan)
+        predicate_string += ").\n"
+        predicate_string = re.sub(",+\)\.",").",predicate_string)
+        f.write(predicate_string)
     f.close()
 
 def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
 
-
-    facts_dict = {"facts/4":[], "facts/5":[], "facts/6":[], "facts/7":[]}
     sparql.setQuery("""
         SELECT ?site ?siteLabel ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
         {
@@ -123,38 +117,33 @@ def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
     results_df = pd.json_normalize(results['results']['bindings'])
 
     f = open("KB.pl", 'a+', encoding='utf8')
-    i = INITIAL_VALUE
     for index, row in results_df.iterrows():
         # hard-coded coordinates of city walls entrance from Piazza dei Miracoli (source: Google Maps)
         predicate_string = "{}(\"{}\", \"{}\", {}, {}, ".format(site_name,
                                                        row["site.value"].split('http://www.wikidata.org/entity/')[1],
                                                        row["siteLabel.value"], lat, lon)
 
-        if 'siteAccessibilityLabel.value' in results_df and pd.notna(row["siteAccessibilityLabel.value"]):
-            i += 1
-            predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
-        if 'siteTripAdvisorIdLabel.value' in results_df and pd.notna(row["siteTripAdvisorIdLabel.value"]):
-            i += 1
+        if 'siteAccessibilityLabel.value' in results_df:
+            if pd.notna(row["siteAccessibilityLabel.value"]):
+                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+            else:
+                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
+        else:
+            predicate_string += "{}, ".format(np.nan)
+        if 'siteTripAdvisorIdLabel.value' in results_df:
             predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
-        if 'siteImage.value' in results_df and pd.notna(row['siteImage.value']):
-            i += 1
-            predicate_string += "\"{}\"".format(row["siteImage.value"])
+        else:
+            predicate_string += "{}, ".format(np.nan)
+        if 'siteImage.value' in results_df:
+            if pd.notna(row["siteImage.value"]):
+                predicate_string += "\"{}\"".format(row["siteImage.value"])
+            else:
+                predicate_string += "{}".format(row["siteImage.value"])
+        else:
+            predicate_string += "{} ".format(np.nan)
         predicate_string += ").\n"
-        predicate_string = re.sub(",+\)\.",").",predicate_string)
-
-        #for optimization reasons, we need to order fact by their arity
-        if i == INITIAL_VALUE:
-            facts_dict["facts/4"].append(predicate_string)
-        elif i == INITIAL_VALUE+1:
-            facts_dict["facts/5"].append(predicate_string)
-        elif i == INITIAL_VALUE+2:
-            facts_dict["facts/6"].append(predicate_string)
-        elif i == INITIAL_VALUE+3:
-            facts_dict["facts/7"].append(predicate_string)
-
-    for key in facts_dict.keys():
-        for fact_string in facts_dict[key]:
-            f.write(fact_string)
+        predicate_string = re.sub(",+\)\.", ").", predicate_string)
+        f.write(predicate_string)
     f.close()
 
 if __name__ == '__main__':
