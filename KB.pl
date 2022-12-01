@@ -1,3 +1,5 @@
+:- include("rules.pl").
+
 park("Q4011005", "Viale delle Piagge (Pisa)", 43.7053, 10.4202, nan, 10638421, "http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%2C%202015%2C%20Viale%20delle%20Piagge.jpg").
 public_garden("Q3678366", "Cittadella Nuova", 43.710406, 10.406252, nan, nan, "http://commons.wikimedia.org/wiki/Special:FilePath/Giardino%20di%20Scotto%2C%20galleria%2002.JPG").
 city_walls("Q3328004", "city walls of Pisa", 43.72518845930142, 10.39367112698515, nan, nan, "http://commons.wikimedia.org/wiki/Special:FilePath/Mura%20di%20Pisa%2C%20Vista%20da%20Largo%20Zan%20Zeno.jpg").
@@ -113,3 +115,4 @@ monument("Q97099372", "Wayside shrine in Via Santa Lucia", 43.716163, 10.395239,
 monument("Q112248502", "Plaque in memory of Lieutenant Enzo Zerboglio", 43.7129375, 10.4026875, nan, nan, nan).
 monument("Q112865931", "Plaque to the soldiers of the V Superga artillery regiment", 43.69891046587, 10.449194312096, nan, nan, nan).
 monument("Q111820483", "War memorial in Palazzo della Sapienza", 43.71732, 10.39909, nan, nan, "http://commons.wikimedia.org/wiki/Special:FilePath/Palazzo%20della%20Sapienza%20-%20Monumento%20agli%20studenti%20caduti%20nella%20Prima%20guerra%20mondiale%20%282009%2C%202%29.jpg").
+
