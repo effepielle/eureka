@@ -64,7 +64,7 @@ def query_knowledge_base(kb_name, sites_category_labels):
 def main():
     # add into this list the labels of cultural sites (e.g church_building) used to built the knowledge base, to create the respective entity in Dialogflow
     # PAY ATTENTION: check entities list on Dialogflow before adding something new. No duplicates allowed!!!
-    site_category_labels = [] 
+    site_category_labels = ["park", "public_garden", "city_walls", "church_building" ] 
     query_knowledge_base("KB", site_category_labels)
 
 main()
