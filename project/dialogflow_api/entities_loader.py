@@ -43,24 +43,29 @@ def query_knowledge_base(kb_name, sites_category_labels):
     os.chdir(subdir)
 
     # query prolog KB to retrieve pairs item id, item label according to site_labels passed as input
-    with PrologMQI() as mqi:
-        with mqi.create_thread() as prolog_thread:
-            prolog_thread.query("consult(\"{}.pl\")".format(kb_name))
+    try:
+        with PrologMQI() as mqi:
+            with mqi.create_thread() as prolog_thread:
+                prolog_thread.query("consult(\"{}.pl\")".format(kb_name))
 
-            for site in sites_category_labels:
-                result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
+                for site in sites_category_labels:
+                    result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
+                    # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                 # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
-                entities = []
-                for r in result:
-                    entity = dialogflow.EntityType.Entity()
-                    entity.value = r["Id"]
-                    entity.synonyms = [r["Id"], r["Label"]]
-                    entities.append(entity)
+                    # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
+                    entities = []
+                    for r in result:
+                        entity = dialogflow.EntityType.Entity()
+                        entity.value = r["Id"]
+                        entity.synonyms = [r["Id"], r["Label"]]
+                        entities.append(entity)
 
-                if len(entities) > 0:
-                    create_entity(site, entities)
-                else:
-                    print("There are no entities to add.")
+                    if len(entities) > 0:
+                        create_entity(site, entities)
+                    else:
+                        print("There are no entities to add.")
+    except PrologError:
+        print("Specified facts doesn't exist in KB.")
 
 
 def main():
