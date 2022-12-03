@@ -18,16 +18,16 @@ def main():
         "city_walls": "Q16748868",
         "church_building": "Q16970",
         "square": "Q174782",
-        #TODO: event may not have coordinates, what we need to do?
         "cultural_event": "Q58687420",
         "museum":"Q33506",
         "monument":"Q4989906"
-        #TODO: add more items
+        #TODO Marco and Giacomo: add more items
     }
 
     for site_name, site_wikidata_id in dict.items():
         if site_name == "city_walls":
             compute_hard_coded_address_query(site_name,site_wikidata_id, 43.72518845930142, 10.39367112698515)
+            #TODO Francesco: insert np.nan or coordinate of the cultural event
         else:
             compute_query(site_name,site_wikidata_id)
 

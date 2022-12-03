@@ -52,7 +52,7 @@ def query_knowledge_base(kb_name, sites_category_labels):
                     try:
                         result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
                     except:
-                        print(site, " doesn't exist in KB. Skipped.")
+                        print(site, "doesn't exist in KB. Skipped.")
                         continue
                     # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                     # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
@@ -76,7 +76,8 @@ def query_knowledge_base(kb_name, sites_category_labels):
 
 def main():
     # add into this list the labels of cultural sites (e.g church_building) in KB, to create the entity in Dialogflow
-    site_category_labels = ["park", "public_garden", "city_walls", "church_building" ] 
+    #TODO Marco and Giacomo: add remaining facts label
+    site_category_labels = ["park", "public_garden", "city_walls", "church_building","square", "cultural_event", "museum", "monument" ]
     query_knowledge_base("KB", site_category_labels)
 
 if __name__ == '__main__':
