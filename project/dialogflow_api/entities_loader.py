@@ -14,16 +14,18 @@ def create_entity(site_category_label, entities_list):
     client = dialogflow.EntityTypesClient()
     duplicate_entity_type = False
 
-    # check if an entity type exists (entity type = church_building, park, city_walls, etc. - USE THE SAME AS KB)
+    # check if an entity type exists (entity type = KB facts name e.g. church_building, park, city_walls, etc.)
+    # list_entity_types returns a ListEntityTypesResponse which can be iterated with "pages"
     for page in client.list_entity_types(parent="projects/{}/agent".format(DIALOGFLOW_PROJECT_ID)).pages:
         for entity in page.entity_types:
             if entity.display_name == site_category_label:
                 duplicate_entity_type = True
 
-                # update the entity type with update entities (i.e. entities = Duomo di Pisa, Sant'anna, San Zeno for entity type church_building)
+                # update the entity_type with updated entity list (e.g. entity_list = [(Q585547, Santa Cristina), (ID, Label), ...] for church_building)
                 request = dialogflow.BatchUpdateEntitiesRequest(parent=entity.name, entities=entities_list)
                 client.batch_update_entities(request=request)
                 break
+        break
 
     if(duplicate_entity_type == False):
         # create the entity type and add entities
@@ -47,7 +49,7 @@ def query_knowledge_base(kb_name, sites_category_labels):
 
             for site in sites_category_labels:
                 result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
-                # iterate over query result, if any, and create an entity list 
+                # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                 entities = []
                 for r in result:
                     entity = dialogflow.EntityType.Entity()
@@ -62,9 +64,9 @@ def query_knowledge_base(kb_name, sites_category_labels):
 
 
 def main():
-    # add into this list the labels of cultural sites (e.g church_building) used to built the knowledge base, to create the respective entity in Dialogflow
-    # PAY ATTENTION: check entities list on Dialogflow before adding something new. No duplicates allowed!!!
+    # add into this list the labels of cultural sites (e.g church_building) in KB, to create the entity in Dialogflow
     site_category_labels = ["park", "public_garden", "city_walls", "church_building" ] 
     query_knowledge_base("KB", site_category_labels)
 
-main()
+if __name__ == '__main__':
+    main()
