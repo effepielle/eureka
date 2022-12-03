@@ -49,9 +49,15 @@ def query_knowledge_base(kb_name, sites_category_labels):
                 prolog_thread.query("consult(\"{}.pl\")".format(kb_name))
 
                 for site in sites_category_labels:
-                    result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
+                    try:
+                        result = prolog_thread.query("{}(Id, Label, _,_,_,_,_,_)".format(site))
+                    except:
+                        print(site, " doesn't exist in KB. Skipped.")
+                        continue
+                    # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                     # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                 # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
+                    # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                     # iterate over query result (in the form item_id, item_label), if any, and create an entity list 
                     entities = []
                     for r in result:
@@ -65,7 +71,7 @@ def query_knowledge_base(kb_name, sites_category_labels):
                     else:
                         print("There are no entities to add.")
     except PrologError:
-        print("Specified facts doesn't exist in KB.")
+        print(PrologError)
 
 
 def main():
