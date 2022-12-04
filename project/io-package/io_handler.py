@@ -30,6 +30,9 @@ query_parameters = {
 #TODO: add more items
 sites_list = ["Parks", "Public Gardens", "City Walls", "Churches", "Squares", "Museums", "Monuments" ] # "Cultural Events"
 
+search_improvement_list = ["Accessibility", "Rating", "Prices"]
+
+ORIGINAL_DIM_SEARCH_IMPROVEMENT = len(search_improvement_list)
  #STEP 0: bot is started and asks user to choose an asset category (Arts & Culture, Architecture, Green Areas)
 @bot.message_handler(commands=['start'])
 def handle_conversation(message):
@@ -52,23 +55,26 @@ def category_handler(message):
         msg = bot.send_message(message.chat.id, "Great!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, site_label_handler)
     elif message.text == "Architecture":
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
-        labels = ["City Walls", "Churches", "Squares", "Monuments"]
-        create_keyboard(keyboard, labels)
+
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        create_keyboard(keyboard, ["City Walls", "Churches", "Squares", "Monuments"])
         keyboard.add(types.KeyboardButton("< Back"))
-        msg = bot.send_message(message.chat.id, "Ok!", reply_markup=keyboard)
+
+        msg = bot.send_message(message.chat.id, "Great!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, site_label_handler)
     elif message.text == "Green Areas":
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
-        labels = ["Parks", "Public Gardens"]
-        create_keyboard(keyboard, labels)
+
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        create_keyboard(keyboard, ["Parks", "Public Gardens"])
         keyboard.add(types.KeyboardButton("< Back"))
-        msg = bot.send_message(message.chat.id, "Ok!", reply_markup=keyboard)
+
+        msg = bot.send_message(message.chat.id, "Great!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, site_label_handler)
     else:
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
-        labels = ["Arts & Culture", "Architecture", "Green Areas"]
-        create_keyboard(keyboard, labels)
+
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
+
         msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, category_handler)
 
@@ -85,13 +91,14 @@ def site_label_handler(message):
         create_keyboard(keyboard, ["Accessibility", "Prices", "Rating"])
         # Make this button separated from the group
         keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "I can improve the search if you suggest other details or show you the results for {}".format(message.text), reply_markup=keyboard)
         bot.register_next_step_handler(msg, search_improvements_handler)
 
     elif message.text == "< Back":
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        create_keyboard(keyboard, ["Art & Culture", "Architecture", "Green Areas"])
+        create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
 
         msg = bot.send_message(message.chat.id, "To start, choose a category below", reply_markup=keyboard)
         bot.register_next_step_handler(msg, category_handler)
@@ -106,6 +113,7 @@ def site_label_handler(message):
 # STEP 2: check if user wants to add more details to the query (accessibility, cost, rating etc.). If not, the bot shows query results
 def search_improvements_handler(message):
 
+    global search_improvement_list
     # if the message is a request for details
     if message.text == "Accessibility":
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -120,9 +128,34 @@ def search_improvements_handler(message):
         pass
    #TODO now
     elif message.text == "Rating":
-        pass
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        create_keyboard(keyboard, ["⭐", "⭐⭐", "⭐⭐⭐","⭐⭐⭐⭐","⭐⭐⭐⭐⭐"])
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Choose the rating!", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, rating_choice_handler)
     elif message.text == "Show me results":
         pass
+
+    elif message.text == "< Back":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+        if len(search_improvement_list) == ORIGINAL_DIM_SEARCH_IMPROVEMENT:
+            create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
+            #keyboard.add(types.KeyboardButton("< Back"))
+            msg = bot.send_message(message.chat.id, "To start, choose a category below", reply_markup=keyboard)
+            bot.register_next_step_handler(msg, category_handler)
+        else:
+            search_improvement_list = ["Accessibility", "Prices", "Rating"]
+            create_keyboard(keyboard, search_improvement_list)
+            keyboard.add(types.KeyboardButton("< Back"))
+            keyboard.add(types.KeyboardButton("Show me results"))
+
+            msg = bot.send_message(message.chat.id, "I can improve the search or show you the results. What can I do?",
+                                   reply_markup=keyboard)
+            bot.register_next_step_handler(msg, search_improvements_handler)
+
+
     else:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["Accessibility", "Prices", "Rating"])
@@ -134,12 +167,15 @@ def search_improvements_handler(message):
 # STEP 2.1: checks whether the user is in a wheelchair 
 def accessibility_choice_handler(message):
 
+    global search_improvement_list
 
     if message.text == "Yes":
         #TODO: save user choice
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        create_keyboard(keyboard, ["Prices", "Rating"])
+        search_improvement_list.remove("Accessibility")
+        create_keyboard(keyboard, search_improvement_list)
         keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, search_improvements_handler)
@@ -148,8 +184,10 @@ def accessibility_choice_handler(message):
     elif message.text == "No":
         #TODO: save user choice
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        create_keyboard(keyboard, ["Prices", "Rating"])
+        search_improvement_list.remove("Accessibility")
+        create_keyboard(keyboard, search_improvement_list)
         keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, search_improvements_handler)
@@ -157,15 +195,17 @@ def accessibility_choice_handler(message):
 
     elif message.text == "< Back":
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        create_keyboard(keyboard, ["Accessibility", "Prices", "Rating"])
+        search_improvement_list = ["Accessibility", "Prices", "Rating"]
+        create_keyboard(keyboard, search_improvement_list)
         keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "I can improve the search or show you the results. What can I do?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, search_improvements_handler)
     else:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["Yes", "No"])
-        keyboard.add(types.KeyboardButton("< back"))
+        keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, accessibility_choice_handler)
@@ -177,7 +217,78 @@ def prices_choice_handler(message):
 
 # STEP 2.3: checks user's preferences about assets rating
 def rating_choice_handler(message):
-    pass
+
+    global search_improvement_list
+    if message.text == "⭐":
+        #TODO: save user choice
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list.remove("Rating")
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+
+
+    elif message.text == "⭐⭐":
+        #TODO: save user choice
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list.remove("Rating")
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+
+
+    elif message.text == "⭐⭐⭐":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list.remove("Rating")
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+
+    elif message.text == "⭐⭐⭐⭐":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list.remove("Rating")
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+
+    elif message.text == "⭐⭐⭐⭐⭐":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list.remove("Rating")
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "Want to add more preferences?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+
+    elif message.text == "< Back":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        search_improvement_list = ["Accessibility", "Prices", "Rating"]
+        create_keyboard(keyboard, search_improvement_list)
+        keyboard.add(types.KeyboardButton("Show me results"))
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "I can improve the search or show you the results. What can I do?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
+    else:
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        create_keyboard(keyboard, ["⭐", "⭐⭐", "⭐⭐⭐","⭐⭐⭐⭐","⭐⭐⭐⭐⭐"])
+        keyboard.add(types.KeyboardButton("< Back"))
+
+        msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, rating_choice_handler)
 
 # Show query results
 def show_results(message):
@@ -185,5 +296,8 @@ def show_results(message):
     pass
 
 
+def back_button_handler(message):
+
+    create_keyboard()
 
 bot.infinity_polling()
