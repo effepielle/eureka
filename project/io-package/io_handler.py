@@ -23,7 +23,7 @@ def handle_conversation(message):
     #TODO: add more items
     sites_list = ["Parks", "Public Gardens", "City Walls", "Churches", "Squares", "Museums", "Monuments" ] # "Cultural Events"
     create_keyboard(keyboard, sites_list)
-    
+    #TODO: handle unknown input
     msg = bot.send_message(message.chat.id, "What would you like to do?", reply_markup=keyboard) #TODO: fix question
     bot.register_next_step_handler(msg, site_label_handler)
 
@@ -36,5 +36,24 @@ def site_label_handler(message):
     create_keyboard(keyboard, labels)
     keyboard.add(types.KeyboardButton("Show me results")) # Make this button separeted from the group
     msg = bot.send_message(message.chat.id, "I can improve the search if you suggest other details or show you the results for ""{}".format(message.text), reply_markup=keyboard)
+    bot.register_next_step_handler(msg, search_improvements_handler)
+
+def search_improvements_handler(message):
+    if message.text == "Accessibility":
+        pass
+    elif message.text == "Prices":
+        pass
+    elif message.text == "Rating":
+        pass
+    elif message.text == "Show me results":
+        pass
+    else:
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        labels = ["Accessibility", "Prices", "Rating"]
+        create_keyboard(keyboard, labels)
+        keyboard.add(types.KeyboardButton("Show me results"))
+
+        msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, search_improvements_handler)
 
 bot.infinity_polling()
