@@ -1,4 +1,5 @@
 from telebot import types
+import random
 
 # Takes a Telegram Keyboard object and a list of labels and creates buttons, three for each keyboard's row
 def create_keyboard(keyboard, labels):
@@ -55,3 +56,9 @@ def generate_search_improvement_choices(dict):
         string += "Rating: all ratings\n"
     
     return string
+
+def is_wheather_bad():
+    return random.choice([True, False])
+
+
+print(is_wheather_bad())
