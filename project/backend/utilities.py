@@ -1,19 +1,17 @@
 from telebot import types
 
-#TODO: add more items
-sites_list = ["Parks", "Public Gardens", "City Walls", "Churches", "Squares", "Museums", "Monuments" ] # "Cultural Events"
-
-def create_keyboard(keyboard):
+# Takes a Telegram Keyboard object and a list of labels and creates buttons, three for each keyboard's row
+def create_keyboard(keyboard, labels):
     button_list = []
     counter = 0
-    for i in sites_list:
+    for i in labels:
         button_list.append(types.KeyboardButton(i))
         counter += 1
         if counter == 3:
             keyboard.row(button_list[0],button_list[1],button_list[2])
             button_list = []
             counter = 0
-        elif sites_list.index(i) == len(sites_list)-1:
+        elif labels.index(i) == len(labels)-1:
             if counter == 2:
                 keyboard.row(button_list[0], button_list[1])
                 button_list = []
