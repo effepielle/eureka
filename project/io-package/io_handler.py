@@ -112,5 +112,18 @@ def accessibility_choice_handler(message):
         msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, accessibility_choice_handler)
 
+# STEP 2.2: checks user's price preferences about cultural assets
+def prices_choice_handler(message):
+    pass
+
+# STEP 2.3: checks user's preferences about assets rating
+def rating_choice_handler(message):
+    pass
+
+# Show query results
+def show_results(message):
+    # TODO: prolog query to kb
+    pass
+
 
 bot.infinity_polling()
