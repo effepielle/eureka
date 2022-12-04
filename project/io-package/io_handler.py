@@ -14,6 +14,18 @@ from backend.utilities import *
 # for testing: https://t.me/eurekachatbot
 bot = telebot.TeleBot('5689759624:AAHfrWL9xPd8KlG11ah1wm95EMago4TK6AI') #TODO: fix token path
 
+query_parameters = {
+    "fact": "",
+    "ID": "Id",
+    "label": "Label",
+    "lat": "",
+    "lon":"",
+    "accessibility": "",
+    "tripadvisor_id": "",
+    "image" : "",
+    "stars": ""
+}
+
  #STEP 0: bot is started and asks user to choose an asset type (churches, monuments, towers, etc.)
 @bot.message_handler(commands=['start'])
 def handle_conversation(message):
@@ -29,7 +41,7 @@ def handle_conversation(message):
 
 # STEP 1: the user choice is handled
 def site_label_handler(message):
-    site_label = convert_to_label(message.text)
+    query_parameters["fact"] = convert_to_label(message.text)
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     labels = ["Accessibility", "Prices", "Rating"]
