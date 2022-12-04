@@ -1,10 +1,11 @@
 import os
 import re
 import sys
+import swiplserver
 
 subdir = re.sub("eureka.*","eureka",os.getcwd())
 os.chdir(subdir)
-sys.path.append('../eureka/project')
+sys.path.append('../eureka')
 
 import telebot
 from project.config_files.config import TELEGRAM_TOKEN
