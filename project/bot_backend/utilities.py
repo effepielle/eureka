@@ -61,4 +61,6 @@ def is_wheather_bad():
     return random.choice([True, False])
 
 
-print(is_wheather_bad())
+#print(is_wheather_bad())
+
+

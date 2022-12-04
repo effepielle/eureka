@@ -1,7 +1,10 @@
 import os
 import re
 import sys
+
+import pandas as pd
 import swiplserver
+from swiplserver import PrologMQI
 
 subdir = re.sub("eureka.*", "eureka", os.getcwd())
 os.chdir(subdir)
@@ -12,19 +15,17 @@ from project.config_files.config import TELEGRAM_TOKEN
 from project.bot_backend.utilities import *
 import numpy as np
 
-# for testing: https://t.me/eurekachatbot
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 query_parameters = {
     "fact": "",
     "ID": "Id",
     "label": "Label",
-    "lat": "",
-    "lon": "",
-    "accessibility": "",
-    "tripadvisor_id": "",
-    "image": "",
-    "stars": ""
+    "lat": "_",
+    "lon": "_",
+    "accessibility": "_",
+    "tripadvisor_id": "_",
+    "image": "Image",
+    "stars": "_"
 }
 
 # TODO: add more items
@@ -36,11 +37,30 @@ search_improvement_list = ["Accessibility", "Rating", "Prices"]
 ORIGINAL_DIM_SEARCH_IMPROVEMENT = len(search_improvement_list)
 
 
+# for testing: https://t.me/eurekachatbot
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
+
 # STEP 0: bot is started and asks user to choose an asset category (Arts & Culture, Architecture, Green Areas)
 @bot.message_handler(commands=['start'])
 def handle_conversation(message):
+    global search_improvement_list
+    global query_parameters
+
     bot.send_message(message.chat.id, "Hello {}! I'm {} and I can help you to discover cultural assets in Pisa.".format(
         message.chat.first_name, "EUREKA"))
+
+    search_improvement_list = ["Accessibility", "Rating", "Prices"]
+    query_parameters = {
+    "fact": "",
+    "ID": "Id",
+    "label": "Label",
+    "lat": "_",
+    "lon": "_",
+    "accessibility": "_",
+    "tripadvisor_id": "_",
+    "image": "Image",
+    "stars": "_"
+    }
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
@@ -123,9 +143,10 @@ def site_label_handler(message):
 # the bot shows query results
 def search_improvements_handler(message):
     global search_improvement_list
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
     # if the message is a request for details
     if message.text == "Accessibility":
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["Yes", "No"])
         keyboard.add(types.KeyboardButton("< Back"))
 
@@ -135,25 +156,28 @@ def search_improvements_handler(message):
     # TODO
     elif message.text == "Prices":
         pass
+
     elif message.text == "Rating":
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"])
         keyboard.add(types.KeyboardButton("< Back"))
 
         msg = bot.send_message(message.chat.id, "Choose the rating!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, rating_choice_handler)
+
+
     elif message.text == "Show me results":
-        pass
+        msg = bot.send_message(message.chat.id, "Here it is some nice results: ")
+        show_results_handler(msg)
+
 
     elif message.text == "< Back":
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 
         if len(search_improvement_list) == ORIGINAL_DIM_SEARCH_IMPROVEMENT:
             create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
             # TODO keyboard.add(types.KeyboardButton("< Back"))
             msg = bot.send_message(message.chat.id, "To start, choose a category below", reply_markup=keyboard)
             bot.register_next_step_handler(msg, category_handler)
-            
+
         else:
             search_improvement_list = ["Accessibility", "Prices", "Rating"]
             create_keyboard(keyboard, search_improvement_list)
@@ -167,7 +191,6 @@ def search_improvements_handler(message):
 
 
     else:
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["Accessibility", "Prices", "Rating"])
         keyboard.add(types.KeyboardButton("Show me results"))
         keyboard.add(types.KeyboardButton("< Back"))
@@ -312,9 +335,41 @@ def rating_choice_handler(message):
         bot.register_next_step_handler(msg, rating_choice_handler)
 
 
-# Show query results
-def show_results(message):
+# FINAL STEP: show query result
+def show_results_handler(message):
 
+    results_list = []
+    query_string = ""
+
+    for key in query_parameters:
+        if key == "fact":
+            query_string +="{}(".format(query_parameters[key])
+        elif key == "accessibility" and pd.notna(query_parameters[key]) and query_parameters[key] != "_":
+                query_string += "\"{}\",".format(query_parameters[key])
+        elif key:
+            query_string += "{},".format(query_parameters[key])
+
+    #TODO: to update if we add more rules
+    query_string += ")."
+    query_string = re.sub(",+\)\.", ").", query_string)
+
+    #print(query_string)
+
+    subdir = re.sub("eureka.*", "eureka", os.getcwd())
+    os.chdir(subdir)
+    with PrologMQI() as mqi:
+        with mqi.create_thread() as prolog_thread:
+            prolog_thread.query("consult(\"project/kb_configuration/KB.pl\")")
+
+            result_iterable = prolog_thread.query(query_string)
+            if type(result_iterable) == bool:
+                bot.send_message(message.chat.id, "{}".format(result_iterable))
+            else:
+                for result in result_iterable:
+                    results_list.append([result[key] for key in result])
+                #TODO: could give too much results and api error
+                bot.send_message(message.chat.id, "{}".format(results_list))
+    bot.send_message(message.chat.id, "Digit \"/start\" to go on with Pisa exploration!!")
 
 
 bot.infinity_polling()
