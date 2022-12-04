@@ -36,3 +36,22 @@ def convert_to_label(user_choice):
         #TODO: add more items
     }
     return dict[user_choice]
+
+def generate_search_improvement_choices(dict):
+    string = "Current choices: \n"
+    if dict["accessibility"] != "":
+        if dict["accessibility"] == "wheelchair accessible":
+            string += "Accessibility: wheelchair friendly\n"
+        else:
+            string += "Accessibility: wheelchair friendly & unfriendly\n"
+    else:
+        string += "Accessibility: N/A\n"
+    
+    #TODO: prices
+
+    if dict["stars"] != "":
+        string += "Rating: {} star(s) \n".format(dict["stars"])
+    else:
+        string += "Rating: all ratings\n"
+    
+    return string
