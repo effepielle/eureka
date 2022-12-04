@@ -25,6 +25,11 @@ def handle_conversation(message):
 
 # STEP 1: the user choice is handled
 def site_label_handler(message):
-    print(message.text)
+    site_label = convert_to_label(message.text)
+    
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    keyboard.add(types.KeyboardButton("Accessibility"), types.KeyboardButton("Prices"), types.KeyboardButton("Rating"))
+    keyboard.add(types.KeyboardButton("Show me results"))
+    msg = bot.send_message(message.chat.id, "I can improve the search if you suggest other details or show you the results for ""{}".format(message.text), reply_markup=keyboard)
 
 bot.infinity_polling()

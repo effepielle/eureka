@@ -25,3 +25,6 @@ def create_keyboard(keyboard):
     # keyboard.add(types.KeyboardButton("Parks"), types.KeyboardButton("Public Garden"), types.KeyboardButton("City Walls"))
     # keyboard.add(types.KeyboardButton("Churches"))
 
+def convert_to_label(user_choice):
+    #TODO: return user choice in the form of KB label (e.g. if users choices Churches the function should return church_building)
+    pass
