@@ -23,6 +23,13 @@ def create_keyboard(keyboard, labels):
     # keyboard.add(types.KeyboardButton("Parks"), types.KeyboardButton("Public Garden"), types.KeyboardButton("City Walls"))
     # keyboard.add(types.KeyboardButton("Churches"))
 
-def convert_to_label(user_choice):
-    #TODO: return user choice in the form of KB label (e.g. if users choices Churches the function should return church_building)
-    pass
+#convert user choice in the form of KB label (e.g. if users choices Churches the function should return church_building)
+def convert_to_label(user_choice): 
+    dict = {
+        "Churches": "church_building",
+        "Parks": "park", 
+        "Public Gardens": "public_garden", 
+        "City Walls": "city_walls"
+        #TODO: add more items
+    }
+    return dict[user_choice]
