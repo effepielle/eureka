@@ -29,7 +29,10 @@ def convert_to_label(user_choice):
         "Churches": "church_building",
         "Parks": "park", 
         "Public Gardens": "public_garden", 
-        "City Walls": "city_walls"
+        "City Walls": "city_walls",
+        "Squares": "square", 
+        "Museums": "museum",
+        "Monuments": "monument"
         #TODO: add more items
     }
     return dict[user_choice]

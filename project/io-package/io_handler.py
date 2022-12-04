@@ -35,10 +35,44 @@ sites_list = ["Parks", "Public Gardens", "City Walls", "Churches", "Squares", "M
 def handle_conversation(message):
     bot.send_message(message.chat.id, "Hello {}! I'm {} and I can help you to discover cultural assets in Pisa.".format(message.chat.first_name, "EUREKA"))
     
+    labels = ["Arts & Culture", "Architecture", "Green Areas"]
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
-    create_keyboard(keyboard, sites_list)
-    msg = bot.send_message(message.chat.id, "What would you like to do?", reply_markup=keyboard) #TODO: fix question
-    bot.register_next_step_handler(msg, site_label_handler)
+    create_keyboard(keyboard, labels)
+    msg = bot.send_message(message.chat.id, "Let's start by choosing a category", reply_markup=keyboard) #TODO: fix question
+    bot.register_next_step_handler(msg, category_handler)
+
+#STEP 0.1: bot asks user to select a sub-category
+def category_handler(message):
+    if message.text == "Arts & Culture":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        labels = ["Museums"]
+        create_keyboard(keyboard, labels)
+        keyboard.add(types.KeyboardButton("< Back"))
+        msg = bot.send_message(message.chat.id, "Ok!", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, site_label_handler)
+    elif message.text == "Architecture":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        labels = ["City Walls", "Churches", "Squares", "Monuments"]
+        create_keyboard(keyboard, labels)
+        keyboard.add(types.KeyboardButton("< Back"))
+        msg = bot.send_message(message.chat.id, "Ok!", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, site_label_handler)
+    elif message.text == "Green Areas":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        labels = ["Parks", "Public Gardens"]
+        create_keyboard(keyboard, labels)
+        keyboard.add(types.KeyboardButton("< Back"))
+        msg = bot.send_message(message.chat.id, "Ok!", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, site_label_handler)
+    else:
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        labels = ["Arts & Culture", "Architecture", "Green Areas"]
+        create_keyboard(keyboard, labels)
+        msg = bot.send_message(message.chat.id, "I don't think I understand, could you choose from the options below?", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, category_handler)
+
 
 # STEP 1: the user choice is handled
 def site_label_handler(message):
@@ -50,6 +84,12 @@ def site_label_handler(message):
         keyboard.add(types.KeyboardButton("Show me results")) # Make this button separeted from the group
         msg = bot.send_message(message.chat.id, "I can improve the search if you suggest other details or show you the results for ""{}".format(message.text), reply_markup=keyboard)
         bot.register_next_step_handler(msg, search_improvements_handler)
+    elif message.text == "< Back":
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
+        labels = ["Art & Culture", "Architecture", "Green Areas"]
+        create_keyboard(keyboard, labels)
+        msg = bot.send_message(message.chat.id, "To start, choose a category below", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, category_handler)
     else:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True) 
         create_keyboard(keyboard, sites_list)
