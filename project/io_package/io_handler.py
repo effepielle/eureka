@@ -398,17 +398,20 @@ def carousel(call):
         image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
     else:
         image = image_downloader(main_query_results[index]["Id"], main_query_results[index]["Image"])
+    
+    caption = "*{}*. ".format(main_query_results[index]["Label"])
 
         # Prolog shows only dict of unified free vars, fixed value on Prolog query isn't shown todo with all possible fixable values of the query
         # but in the script we excluded query with: TripID, Image, Lat, Lon instantiable and accessibility is set "_" by default
-        if "Star" in main_query_results[index]:
-            caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"],main_query_results[0]["Star"])
-        else:
-            caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"],query_parameters["stars"])
+    if "Star" in main_query_results[index]:
+        caption += " It was reviewed by users with {} star(s).".format(main_query_results[index]["Label"],main_query_results[index]["Star"])
+    else:
+        caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[index]["Label"],query_parameters["stars"])
+
     if main_query_results[index]["TripID"] != "nan":
         caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[index]["TripID"]))
 
-    keyboard.add(types.InlineKeyboardButton("📍 Get Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[0]["Lat"], main_query_results[index]["Lon"], str(index))))
+    keyboard.add(types.InlineKeyboardButton("📍 Get Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[index]["Lat"], main_query_results[index]["Lon"], str(index))))
     if index == 0:
         keyboard.add(types.InlineKeyboardButton('Next' , callback_data='item_1'))
     elif index == len(main_query_results) - 1:
