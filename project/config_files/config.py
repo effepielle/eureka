@@ -8,6 +8,6 @@ def custom_abs_path(file):
     os.chdir(subdir)
     return os.path.abspath(file)
 
-TELEGRAM_TOKEN = '5689759624:AAHfrWL9xPd8KlG11ah1wm95EMago4TK6AI'
+TELEGRAM_TOKEN = '5689759624:AAHXdHxfT1-rTMGD-vQHeIaqYJ1dQrxoESU'
 
 

@@ -11,6 +11,7 @@ os.chdir(subdir)
 sys.path.append('../eureka')
 
 import telebot
+from telebot import types
 from project.config_files.config import TELEGRAM_TOKEN
 from project.bot_backend.utilities import *
 import numpy as np
@@ -114,7 +115,7 @@ def site_label_handler(message):
 
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         create_keyboard(keyboard, ["Accessibility", "Prices", "Rating"])
-        # Make this button separated from the group
+        # In this way you can separate Show results and back buttons from the rest of the group
         keyboard.add(types.KeyboardButton("Show me results"))
         keyboard.add(types.KeyboardButton("< Back"))
 
@@ -166,8 +167,7 @@ def search_improvements_handler(message):
 
 
     elif message.text == "Show me results":
-        msg = bot.send_message(message.chat.id, "Here it is some nice results: ")
-        show_results_handler(msg)
+        show_results_handler(message)
 
     elif message.text == "< Back":
 
@@ -350,15 +350,15 @@ def show_results_handler(message):
 
             #if no results are found or if it's T/F query
             if type(result_iterable) == bool:
-                #TODO if false (no results are found), do something
-                bot.send_message(message.chat.id, "{}".format(result_iterable))
+                if result_iterable:
+                    bot.send_message(message.chat.id, "{}".format(result_iterable)) #TODO: evaluate if the bot need to do something when the result is True
+                else:
+                    bot.send_message(message.chat.id, "I did not find any results matching your search. /start again.", reply_markup=types.ReplyKeyboardRemove())
             else: #result_iterable is a list of dictonaries
-                for result in result_iterable:
-                    #TODO: manage 'nan' string
-                    results_list.append([result[key] for key in result])
-                #TODO: could give too much results and api error
-                bot.send_message(message.chat.id, "{}".format(results_list))
-    bot.send_message(message.chat.id, "Digit \"/start\" to go on with Pisa exploration!!")
+                bot.send_message(message.chat.id, "Here it is some nice results: ", reply_markup=types.ReplyKeyboardRemove())
+                print(result_iterable)
+                bot.send_message(message.chat.id, "Press \"/start\" to go on with Pisa exploration!")
+            #TODO: result visualization implementation
     #TODO once the results are shown, remove the keyboard
 
 

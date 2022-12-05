@@ -12,4 +12,4 @@ wheelchair_accessible(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star) :- Acce
 visitable_if_raining(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star) :- indoor(Id,Label,Lat,Lon,Accessibility,TripId,Image , Star).
 
     %not interested in other information while querying for best cultural site
-best_site(Id,Label,Lat,Lon,Accessibility,TripId,Image,Star) :- (indoor(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star); outdoor(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star)), Star >=4
+best_site(Id,Label,Lat,Lon,Accessibility,TripId,Image,Star) :- (indoor(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star); outdoor(Id,Label,Lat,Lon,Accessibility,TripId,Image, Star)), Star >=4.
