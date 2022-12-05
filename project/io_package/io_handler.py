@@ -263,6 +263,7 @@ def prices_choice_handler(message):
 def rating_choice_handler(message):
 
     global search_improvement_list
+    global query_parameters
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 
     if message.text == "⭐":
@@ -351,7 +352,6 @@ def show_results_handler(message):
 
             global main_query_results
             main_query_results = prolog_thread.query(query_string)
-
             #if no results are found or if it's T/F query
             if type(main_query_results) == bool:
                 if main_query_results:
@@ -370,14 +370,15 @@ def show_results_handler(message):
                 if main_query_results[0]["TripID"] != "nan":
                     caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
 
+                keyboard = types.InlineKeyboardMarkup()
+                keyboard.add(types.InlineKeyboardButton("📍 Get Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[0]["Lat"], main_query_results[0]["Lon"], str(0))))
+
 
                 if len(main_query_results) > 1:
-                    keyboard = types.InlineKeyboardMarkup()
-                    keyboard.add(types.InlineKeyboardButton("📍 Get Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[0]["Lat"], main_query_results[0]["Lon"], str(0))))
                     keyboard.add(types.InlineKeyboardButton('Next', callback_data='item_1'))
                     bot.send_photo(message.chat.id, photo=open(image, 'rb'), reply_markup=keyboard, caption=caption, parse_mode='Markdown')
                 else:
-                    bot.send_photo(message.chat.id, photo=open(image, 'rb'), caption=caption, parse_mode='Markdown')
+                    bot.send_photo(message.chat.id, photo=open(image, 'rb'), keyboard=keyboard, caption=caption, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: 'item_' in call.data)
 def carousel(call):
@@ -397,7 +398,6 @@ def carousel(call):
     if index == 0:
         keyboard.add(types.InlineKeyboardButton('Next' , callback_data='item_1'))
     elif index == len(main_query_results) - 1:
-
         keyboard.add(types.InlineKeyboardButton('Prev.' , callback_data='item_{}'.format(str(index - 1))))
     else:
         keyboard.add(types.InlineKeyboardButton('Prev.' , callback_data='item_{}'.format(str(index - 1))), types.InlineKeyboardButton('Next', callback_data='item_{}'.format(str(index + 1))))
