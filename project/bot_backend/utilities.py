@@ -32,15 +32,15 @@ def create_keyboard(keyboard, labels):
 #convert user choice in the form of KB label (e.g. if users choices Churches the function should return church_building)
 def convert_to_label(user_choice): 
     dict = {
-        "Churches": "church_building",
-        "Parks": "park", 
-        "Public Gardens": "public_garden", 
-        "City Walls": "city_walls",
-        "Squares": "square", 
-        "Museums": "museum",
-        "Monuments": "monument"
+        "⛪ Churches": "church_building",
+        "🏞️ Parks": "park", 
+        "🌿 Public Gardens": "public_garden", 
+        "🧱 City Walls": "city_walls",
+        "🏙️ Squares": "square", 
+        "🏛️ Museums": "museum",
+        "🗽 Monuments": "monument"
         #TODO: add more items
-        #TODO: reset when user push back
+        #TODO: reset when user pushes back
     }
     return dict[user_choice]
 
