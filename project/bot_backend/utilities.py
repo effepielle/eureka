@@ -1,3 +1,6 @@
+import re
+
+import pandas as pd
 from telebot import types
 import random
 
@@ -56,6 +59,23 @@ def generate_search_improvement_choices(dict):
         string += "Rating: all ratings\n"
     
     return string
+
+def query_KB(query_parameters):
+    query_string = ""
+
+    for key in query_parameters:
+        if key == "fact":
+            query_string += "{}(".format(query_parameters[key])
+        elif key == "accessibility" and pd.notna(query_parameters[key]) and query_parameters[key] != "_":
+            query_string += "\"{}\",".format(query_parameters[key])
+        elif key:
+            query_string += "{},".format(query_parameters[key])
+
+    # TODO: to update if we add more rules
+    query_string += ")."
+    query_string = re.sub(",+\)\.", ").", query_string)
+    # print(query_string)
+    return query_string
 
 def is_wheather_bad():
     return random.choice([True, False])

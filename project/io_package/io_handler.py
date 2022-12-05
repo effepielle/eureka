@@ -20,12 +20,12 @@ query_parameters = {
     "fact": "",
     "ID": "Id",
     "label": "Label",
-    "lat": "_",
-    "lon": "_",
+    "lat": "Lat",
+    "lon": "Long",
     "accessibility": "_",
-    "tripadvisor_id": "_",
+    "tripadvisor_id": "Trip_advisor_id",
     "image": "Image",
-    "stars": "_"
+    "stars": "Star"
 }
 
 # TODO: add more items
@@ -168,7 +168,6 @@ def search_improvements_handler(message):
     elif message.text == "Show me results":
         msg = bot.send_message(message.chat.id, "Here it is some nice results: ")
         show_results_handler(msg)
-
 
     elif message.text == "< Back":
 
@@ -339,21 +338,7 @@ def rating_choice_handler(message):
 def show_results_handler(message):
 
     results_list = []
-    query_string = ""
-
-    for key in query_parameters:
-        if key == "fact":
-            query_string +="{}(".format(query_parameters[key])
-        elif key == "accessibility" and pd.notna(query_parameters[key]) and query_parameters[key] != "_":
-                query_string += "\"{}\",".format(query_parameters[key])
-        elif key:
-            query_string += "{},".format(query_parameters[key])
-
-    #TODO: to update if we add more rules
-    query_string += ")."
-    query_string = re.sub(",+\)\.", ").", query_string)
-
-    #print(query_string)
+    query_string = query_KB(query_parameters)
 
     subdir = re.sub("eureka.*", "eureka", os.getcwd())
     os.chdir(subdir)
@@ -362,14 +347,19 @@ def show_results_handler(message):
             prolog_thread.query("consult(\"project/kb_configuration/KB.pl\")")
 
             result_iterable = prolog_thread.query(query_string)
+
+            #if no results are found or if it's T/F query
             if type(result_iterable) == bool:
+                #TODO if false (no results are found), do something
                 bot.send_message(message.chat.id, "{}".format(result_iterable))
-            else:
+            else: #result_iterable is a list of dictonaries
                 for result in result_iterable:
+                    #TODO: manage 'nan' string
                     results_list.append([result[key] for key in result])
                 #TODO: could give too much results and api error
                 bot.send_message(message.chat.id, "{}".format(results_list))
     bot.send_message(message.chat.id, "Digit \"/start\" to go on with Pisa exploration!!")
+    #TODO once the results are shown, remove the keyboard
 
 
 bot.infinity_polling()
