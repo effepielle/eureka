@@ -38,12 +38,13 @@ def convert_to_label(user_choice):
         "Museums": "museum",
         "Monuments": "monument"
         #TODO: add more items
+        #TODO: reset when user push back
     }
     return dict[user_choice]
 
 def generate_search_improvement_choices(dict):
     string = "Current choices: \n"
-    if dict["accessibility"] != "":
+    if dict["accessibility"] != "_":
         if dict["accessibility"] == "wheelchair accessible":
             string += "Accessibility: wheelchair friendly\n"
         else:
@@ -53,7 +54,7 @@ def generate_search_improvement_choices(dict):
     
     #TODO: prices
 
-    if dict["stars"] != "":
+    if dict["stars"] != "Stars":
         string += "Rating: {} star(s) \n".format(dict["stars"])
     else:
         string += "Rating: all ratings\n"
@@ -62,7 +63,6 @@ def generate_search_improvement_choices(dict):
 
 def query_KB(query_parameters):
     query_string = ""
-
     for key in query_parameters:
         if key == "fact":
             query_string += "{}(".format(query_parameters[key])
@@ -74,7 +74,6 @@ def query_KB(query_parameters):
     # TODO: to update if we add more rules
     query_string += ")."
     query_string = re.sub(",+\)\.", ").", query_string)
-    # print(query_string)
     return query_string
 
 def is_wheather_bad():

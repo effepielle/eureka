@@ -12,7 +12,7 @@ sys.path.append('../eureka')
 
 import telebot
 from telebot import types
-from project.config_files.config import TELEGRAM_TOKEN
+from project.config_files.config import TELEGRAM_TOKEN, IMAGE_PLACEHOLDER
 from project.bot_backend.utilities import *
 import numpy as np
 
@@ -24,10 +24,13 @@ query_parameters = {
     "lat": "Lat",
     "lon": "Long",
     "accessibility": "_",
-    "tripadvisor_id": "Trip_advisor_id",
+    "tripadvisor_id": "TripID",
     "image": "Image",
     "stars": "Star"
 }
+
+#contains the final query results. It needs to be here to be visible to callback query handler methods
+main_query_results = None
 
 # TODO: add more items
 sites_list = ["Parks", "Public Gardens", "City Walls", "Churches", "Squares", "Museums",
@@ -55,13 +58,13 @@ def handle_conversation(message):
     "fact": "",
     "ID": "Id",
     "label": "Label",
-    "lat": "_",
-    "lon": "_",
+    "lat": "Lat",
+    "lon": "Long",
     "accessibility": "_",
-    "tripadvisor_id": "_",
+    "tripadvisor_id": "TripID",
     "image": "Image",
-    "stars": "_"
-    }
+    "stars": "Star"
+}
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     create_keyboard(keyboard, ["Arts & Culture", "Architecture", "Green Areas"])
@@ -337,7 +340,7 @@ def rating_choice_handler(message):
 # FINAL STEP: show query result
 def show_results_handler(message):
 
-    results_list = []
+    global query_parameters
     query_string = query_KB(query_parameters)
 
     subdir = re.sub("eureka.*", "eureka", os.getcwd())
@@ -346,20 +349,59 @@ def show_results_handler(message):
         with mqi.create_thread() as prolog_thread:
             prolog_thread.query("consult(\"project/kb_configuration/KB.pl\")")
 
-            result_iterable = prolog_thread.query(query_string)
+            global main_query_results
+            main_query_results = prolog_thread.query(query_string)
 
             #if no results are found or if it's T/F query
-            if type(result_iterable) == bool:
-                if result_iterable:
-                    bot.send_message(message.chat.id, "{}".format(result_iterable)) #TODO: evaluate if the bot need to do something when the result is True
+            if type(main_query_results) == bool:
+                if main_query_results:
+                    bot.send_message(message.chat.id, "{}".format(main_query_results)) #TODO: evaluate if the bot need to do something when the result is True
                 else:
                     bot.send_message(message.chat.id, "I did not find any results matching your search. /start again.", reply_markup=types.ReplyKeyboardRemove())
-            else: #result_iterable is a list of dictonaries
+            else: #main_query_results is a list of dictonaries
                 bot.send_message(message.chat.id, "Here it is some nice results: ", reply_markup=types.ReplyKeyboardRemove())
-                print(result_iterable)
+                if len(main_query_results) > 1:
+                    keyboard = types.InlineKeyboardMarkup()
+                    keyboard.add(types.InlineKeyboardButton(">", callback_data='item_1'))
+                    caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"], main_query_results[0]["Star"])
+                    if main_query_results[0]["TripID"] != "nan":
+                        caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
+
+                    if main_query_results[0]["Image"] == "nan":
+                        bot.send_photo(message.chat.id, photo=IMAGE_PLACEHOLDER, caption=caption, reply_markup=keyboard, parse_mode='Markdown')
+                    else:
+                        bot.send_photo(message.chat.id, photo=main_query_results[0]["Image"], reply_markup=keyboard, caption=caption, parse_mode='Markdown')
+                else:
+                    if main_query_results[0]["Image"] == "nan":
+                         bot.send_photo(message.chat.id, photo=IMAGE_PLACEHOLDER, caption=caption, parse_mode='Markdown')
+                    else:
+                        image = main_query_results[0]["Image"]
+                        bot.send_photo(message.chat.id, photo=image, caption=caption, parse_mode='Markdown')
                 bot.send_message(message.chat.id, "Press \"/start\" to go on with Pisa exploration!")
-            #TODO: result visualization implementation
-    #TODO once the results are shown, remove the keyboard
+
+@bot.callback_query_handler(func=lambda call: 'item_' in call.data)
+def carousel(call):
+    index = int(call.data[4:].split('_')[1])
+    keyboard = types.InlineKeyboardMarkup()
+
+    caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[index]["Label"], main_query_results[index]["Star"])
+    if main_query_results[index]["TripID"] != "nan":
+        caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[index]["TripID"]))
+
+    if index == 0:
+        keyboard.add(types.InlineKeyboardButton('>', callback_data='item_1'))
+    elif index == len(main_query_results) - 1:
+        keyboard.add(types.InlineKeyboardButton('<', callback_data='item_{}'.format(str(index - 1))))
+    else:
+        keyboard.add(types.InlineKeyboardButton('<', callback_data='item_{}'.format(str(index - 1))), types.InlineKeyboardButton('>', callback_data='item_{}'.format(str(index + 1))))
+    
+    if main_query_results[index]["Image"] == "nan":
+        bot.edit_message_media(media=types.InputMediaPhoto(IMAGE_PLACEHOLDER), chat_id=call.message.chat.id, message_id=call.message.id)
+        bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
+    else:
+        image = main_query_results[index]["Image"]
+        bot.edit_message_media(media=types.InputMediaPhoto(image), chat_id=call.message.chat.id, message_id=call.message.id)
+        bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
 
 
 bot.infinity_polling()
