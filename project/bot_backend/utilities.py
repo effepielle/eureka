@@ -4,7 +4,9 @@ import pandas as pd
 from telebot import types
 import random
 import os
+import platform
 import urllib
+from urllib import request
 
 # Takes a Telegram Keyboard object and a list of labels and creates buttons, three for each keyboard's row
 def create_keyboard(keyboard, labels):
@@ -73,7 +75,7 @@ def query_KB(query_parameters):
         elif key:
             query_string += "{},".format(query_parameters[key])
 
-    # TODO: to update if we add more rules
+    # TODO: to update if we add different way of searching facts
     query_string += ")."
     query_string = re.sub(",+\)\.", ").", query_string)
     return query_string
@@ -82,10 +84,20 @@ def is_wheather_bad():
     return random.choice([True, False])
 
 def image_downloader(id, url):
-    path = "project/bot_backend/img/{}.jpg".format(id)
-    if os.path.isfile(path) == False:
-        urllib.request.urlretrieve(url, path)
-    return path
+    subdir = re.sub("eureka.*", "eureka", os.getcwd())
+    os.chdir(subdir)
+    img_dir = os.path.join(subdir, "project/bot_backend/img")
+
+    if not os.path.exists(img_dir):
+        os.mkdir(img_dir)
+
+    localPath = os.path.join(subdir, img_dir, "{}.jpg".format(id))
+
+
+    if os.path.isfile(localPath) == False:
+        urllib.request.urlretrieve(url, localPath)
+
+    return localPath
 
 
 
