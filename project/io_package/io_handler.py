@@ -22,7 +22,7 @@ query_parameters = {
     "ID": "Id",
     "label": "Label",
     "lat": "Lat",
-    "lon": "Long",
+    "lon": "Lon",
     "accessibility": "_",
     "tripadvisor_id": "TripID",
     "image": "Image",
@@ -59,7 +59,7 @@ def handle_conversation(message):
     "ID": "Id",
     "label": "Label",
     "lat": "Lat",
-    "lon": "Long",
+    "lon": "Lon",
     "accessibility": "_",
     "tripadvisor_id": "TripID",
     "image": "Image",
@@ -359,10 +359,10 @@ def show_results_handler(message):
                 else:
                     bot.send_message(message.chat.id, "I did not find any results matching your search. /start again.", reply_markup=types.ReplyKeyboardRemove())
             else: #main_query_results is a list of dictonaries
-                bot.send_message(message.chat.id, "Here it is some nice results: ", reply_markup=types.ReplyKeyboardRemove())
+                bot.send_message(message.chat.id, "Here it is some nice results tailored for your preferences. To make another search press /start again!", reply_markup=types.ReplyKeyboardRemove())
 
                 if main_query_results[0]["Image"] == "nan":
-                    image = IMAGE_PLACEHOLDER
+                    image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
                 else:
                     image = image_downloader(main_query_results[0]["Id"], main_query_results[0]["Image"])
                 
@@ -373,11 +373,11 @@ def show_results_handler(message):
 
                 if len(main_query_results) > 1:
                     keyboard = types.InlineKeyboardMarkup()
+                    keyboard.add(types.InlineKeyboardButton("Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[0]["Lat"], main_query_results[0]["Lon"], str(0))))
                     keyboard.add(types.InlineKeyboardButton(">", callback_data='item_1'))
                     bot.send_photo(message.chat.id, photo=open(image, 'rb'), reply_markup=keyboard, caption=caption, parse_mode='Markdown')
                 else:
                     bot.send_photo(message.chat.id, photo=open(image, 'rb'), caption=caption, parse_mode='Markdown')
-                bot.send_message(message.chat.id, "Press \"/start\" to go on with Pisa exploration!")
 
 @bot.callback_query_handler(func=lambda call: 'item_' in call.data)
 def carousel(call):
@@ -385,17 +385,19 @@ def carousel(call):
     keyboard = types.InlineKeyboardMarkup()
 
     if main_query_results[index]["Image"] == "nan":
-        image = IMAGE_PLACEHOLDER
+        image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
     else:
         image = image_downloader(main_query_results[index]["Id"], main_query_results[index]["Image"])
 
     caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[index]["Label"], main_query_results[index]["Star"])
     if main_query_results[index]["TripID"] != "nan":
         caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[index]["TripID"]))
-    
+
+    keyboard.add(types.InlineKeyboardButton("Location", callback_data='coordinates_{}_{}_{}'.format(main_query_results[0]["Lat"], main_query_results[index]["Lon"], str(index))))
     if index == 0:
         keyboard.add(types.InlineKeyboardButton('>', callback_data='item_1'))
     elif index == len(main_query_results) - 1:
+
         keyboard.add(types.InlineKeyboardButton('<', callback_data='item_{}'.format(str(index - 1))))
     else:
         keyboard.add(types.InlineKeyboardButton('<', callback_data='item_{}'.format(str(index - 1))), types.InlineKeyboardButton('>', callback_data='item_{}'.format(str(index + 1))))
@@ -403,5 +405,13 @@ def carousel(call):
     bot.edit_message_media(media=types.InputMediaPhoto(open(image, 'rb')), chat_id=call.message.chat.id, message_id=call.message.id)
     bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
 
+@bot.callback_query_handler(func=lambda call: 'coordinates_' in call.data)
+def send_asset_location(call):
+    lat = call.data[11:].split('_')[1]
+    lon = call.data[11:].split('_')[2]
+    index = int(call.data[11:].split('_')[3])
+
+    bot.send_message(call.message.chat.id, "Here it is the location for *{}*.".format(main_query_results[index]["Label"]), parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
+    bot.send_location(call.message.chat.id, latitude=lat, longitude=lon)
 
 bot.infinity_polling()
