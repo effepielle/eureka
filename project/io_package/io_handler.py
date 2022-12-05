@@ -351,6 +351,7 @@ def show_results_handler(message):
 
             global main_query_results
             main_query_results = prolog_thread.query(query_string)
+            print(main_query_results)
 
             #if no results are found or if it's T/F query
             if type(main_query_results) == bool:
@@ -372,6 +373,9 @@ def show_results_handler(message):
                     else:
                         bot.send_photo(message.chat.id, photo=main_query_results[0]["Image"], reply_markup=keyboard, caption=caption, parse_mode='Markdown')
                 else:
+                    caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"], main_query_results[0]["Star"])
+                    if main_query_results[0]["TripID"] != "nan":
+                        caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
                     if main_query_results[0]["Image"] == "nan":
                          bot.send_photo(message.chat.id, photo=IMAGE_PLACEHOLDER, caption=caption, parse_mode='Markdown')
                     else:
