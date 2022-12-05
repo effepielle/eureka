@@ -351,7 +351,6 @@ def show_results_handler(message):
 
             global main_query_results
             main_query_results = prolog_thread.query(query_string)
-            print(main_query_results)
 
             #if no results are found or if it's T/F query
             if type(main_query_results) == bool:
@@ -361,26 +360,23 @@ def show_results_handler(message):
                     bot.send_message(message.chat.id, "I did not find any results matching your search. /start again.", reply_markup=types.ReplyKeyboardRemove())
             else: #main_query_results is a list of dictonaries
                 bot.send_message(message.chat.id, "Here it is some nice results: ", reply_markup=types.ReplyKeyboardRemove())
+
+                if main_query_results[0]["Image"] == "nan":
+                    image = IMAGE_PLACEHOLDER
+                else:
+                    image = image_downloader(main_query_results[0]["Id"], main_query_results[0]["Image"])
+                
+                caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"], main_query_results[0]["Star"])
+                if main_query_results[0]["TripID"] != "nan":
+                    caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
+
+
                 if len(main_query_results) > 1:
                     keyboard = types.InlineKeyboardMarkup()
                     keyboard.add(types.InlineKeyboardButton(">", callback_data='item_1'))
-                    caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"], main_query_results[0]["Star"])
-                    if main_query_results[0]["TripID"] != "nan":
-                        caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
-
-                    if main_query_results[0]["Image"] == "nan":
-                        bot.send_photo(message.chat.id, photo=IMAGE_PLACEHOLDER, caption=caption, reply_markup=keyboard, parse_mode='Markdown')
-                    else:
-                        bot.send_photo(message.chat.id, photo=main_query_results[0]["Image"], reply_markup=keyboard, caption=caption, parse_mode='Markdown')
+                    bot.send_photo(message.chat.id, photo=open(image, 'rb'), reply_markup=keyboard, caption=caption, parse_mode='Markdown')
                 else:
-                    caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[0]["Label"], main_query_results[0]["Star"])
-                    if main_query_results[0]["TripID"] != "nan":
-                        caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[0]["TripID"]))
-                    if main_query_results[0]["Image"] == "nan":
-                         bot.send_photo(message.chat.id, photo=IMAGE_PLACEHOLDER, caption=caption, parse_mode='Markdown')
-                    else:
-                        image = main_query_results[0]["Image"]
-                        bot.send_photo(message.chat.id, photo=image, caption=caption, parse_mode='Markdown')
+                    bot.send_photo(message.chat.id, photo=open(image, 'rb'), caption=caption, parse_mode='Markdown')
                 bot.send_message(message.chat.id, "Press \"/start\" to go on with Pisa exploration!")
 
 @bot.callback_query_handler(func=lambda call: 'item_' in call.data)
@@ -388,10 +384,15 @@ def carousel(call):
     index = int(call.data[4:].split('_')[1])
     keyboard = types.InlineKeyboardMarkup()
 
+    if main_query_results[index]["Image"] == "nan":
+        image = IMAGE_PLACEHOLDER
+    else:
+        image = image_downloader(main_query_results[index]["Id"], main_query_results[index]["Image"])
+
     caption = "*{}*. It was reviewed by users with {} star(s).".format(main_query_results[index]["Label"], main_query_results[index]["Star"])
     if main_query_results[index]["TripID"] != "nan":
         caption += " Check also what users say on [Tripadvisor](https://tripadvisor.com/{})!".format(str(main_query_results[index]["TripID"]))
-
+    
     if index == 0:
         keyboard.add(types.InlineKeyboardButton('>', callback_data='item_1'))
     elif index == len(main_query_results) - 1:
@@ -399,13 +400,8 @@ def carousel(call):
     else:
         keyboard.add(types.InlineKeyboardButton('<', callback_data='item_{}'.format(str(index - 1))), types.InlineKeyboardButton('>', callback_data='item_{}'.format(str(index + 1))))
     
-    if main_query_results[index]["Image"] == "nan":
-        bot.edit_message_media(media=types.InputMediaPhoto(IMAGE_PLACEHOLDER), chat_id=call.message.chat.id, message_id=call.message.id)
-        bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
-    else:
-        image = main_query_results[index]["Image"]
-        bot.edit_message_media(media=types.InputMediaPhoto(image), chat_id=call.message.chat.id, message_id=call.message.id)
-        bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
+    bot.edit_message_media(media=types.InputMediaPhoto(open(image, 'rb')), chat_id=call.message.chat.id, message_id=call.message.id)
+    bot.edit_message_caption(caption=caption, chat_id=call.message.chat.id, message_id=call.message.id, reply_markup=keyboard, parse_mode='Markdown')
 
 
 bot.infinity_polling()

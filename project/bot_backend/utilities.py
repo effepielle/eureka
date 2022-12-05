@@ -3,6 +3,8 @@ import re
 import pandas as pd
 from telebot import types
 import random
+import os
+import urllib
 
 # Takes a Telegram Keyboard object and a list of labels and creates buttons, three for each keyboard's row
 def create_keyboard(keyboard, labels):
@@ -79,7 +81,12 @@ def query_KB(query_parameters):
 def is_wheather_bad():
     return random.choice([True, False])
 
+def image_downloader(id, url):
+    path = "project/bot_backend/img/{}.jpg".format(id)
+    if os.path.isfile(path) == False:
+        urllib.request.urlretrieve(url, path)
+    return path
 
-#print(is_wheather_bad())
+
 
 
