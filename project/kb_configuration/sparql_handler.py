@@ -1,18 +1,18 @@
 import re
 import random
+import sys
 
 import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
-import sys
 
-#agent to use sparql endpoint
-user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
+# agent to use sparql endpoint
+user_agent = f"WDQS-example Python/{sys.version_info[0]}.{sys.version_info[1]}"
 sparql = SPARQLWrapper("https://query.wikidata.org/bigdata/namespace/wdq/sparql", agent=user_agent)
 
 def main():
     # WikiData Item Name - WikiData Item ID
-    dict = {
+    wikidata_dict = {
         "park": "Q22698",
         "public_garden": "Q55177716",
         "city_walls": "Q16748868",
@@ -24,16 +24,16 @@ def main():
         #TODO Marco and Giacomo: add more items
     }
 
-    for site_name, site_wikidata_id in dict.items():
+    for site_name, site_wikidata_id in wikidata_dict.items():
         if site_name == "city_walls":
-            compute_hard_coded_address_query(site_name,site_wikidata_id, 43.72518845930142, 10.39367112698515)
+            compute_hard_coded_address_query(site_name,site_wikidata_id,
+                                                    43.72518845930142, 10.39367112698515)
             #TODO Francesco: insert np.nan or coordinate of the cultural event
         else:
             compute_query(site_name,site_wikidata_id)
 
 
 def compute_query(site_name,wikidata_id):
-
     sparql.setQuery("""
     SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
     {
@@ -62,42 +62,43 @@ def compute_query(site_name,wikidata_id):
 
     results_df = pd.json_normalize(results['results']['bindings'])
 
-    f = open("KB.pl", 'a+', encoding='utf8')
-    for index, row in results_df.iterrows():
+    with open("KB.pl", 'a+', encoding='utf8') as f_knowledge_base:
+        for _, row in results_df.iterrows():
 
-        predicate_string = "{}(\"{}\", \"{}\", {}, {}, ".format(site_name,
-                                                        row["site.value"].split('http://www.wikidata.org/entity/')[1],
-                                                        row["siteLabel.value"], row["siteLat.value"],
-                                                        row["siteLon.value"])
+            predicate_string = (
+                                    f"{site_name}"
+                                    f"(\"{(row['site.value'].split('http://www.wikidata.org/entity/')[1])}\", "
+                                    f"\"{row['siteLabel.value']}\", "
+                                    f"{row['siteLat.value']}, "
+                                    f"{row['siteLon.value']}, "
+            )
 
-        if 'siteAccessibilityLabel.value' in results_df:
-            if pd.notna(row["siteAccessibilityLabel.value"]):
-                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+            if 'siteAccessibilityLabel.value' in results_df:
+                if pd.notna(row["siteAccessibilityLabel.value"]):
+                    predicate_string += f"\"{row['siteAccessibilityLabel.value']}\", "
+                else:
+                    predicate_string += f"{row['siteAccessibilityLabel.value']}, "
             else:
-                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
-        if 'siteTripAdvisorIdLabel.value' in results_df:
-            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
-        if 'siteImage.value' in results_df:
-            if pd.notna(row["siteImage.value"]):
-                predicate_string += "\"{}\",".format(row["siteImage.value"])
+                predicate_string += f"{np.nan}, "
+            if 'siteTripAdvisorIdLabel.value' in results_df:
+                predicate_string += f"{row['siteTripAdvisorIdLabel.value']}, "
             else:
-                predicate_string += "{},".format(row["siteImage.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
+                predicate_string += f"{np.nan}, "
+            if 'siteImage.value' in results_df:
+                if pd.notna(row["siteImage.value"]):
+                    predicate_string += f"\"{row['siteImage.value']}\","
+                else:
+                    predicate_string += f"{row['siteImage.value']},"
+            else:
+                predicate_string += f"{np.nan}, "
 
-        #random generated star
-        predicate_string += "{}".format(random.randrange(6))
-        predicate_string += ").\n"
-        predicate_string = re.sub(",+\)\.",").",predicate_string)
-        f.write(predicate_string)
-    f.close()
+            #random generated star
+            predicate_string += f"{random.randrange(6)}"
+            predicate_string += ").\n"
+            predicate_string = re.sub(",+\)\.",").",predicate_string)
+            f_knowledge_base.write(predicate_string)
 
 def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
-
     sparql.setQuery("""
         SELECT ?site ?siteLabel ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
         {
@@ -121,39 +122,43 @@ def compute_hard_coded_address_query(site_name,wikidata_id, lat, lon):
 
     results_df = pd.json_normalize(results['results']['bindings'])
 
-    f = open("KB.pl", 'a+', encoding='utf8')
-    for index, row in results_df.iterrows():
-        # hard-coded coordinates of city walls entrance from Piazza dei Miracoli (source: Google Maps)
-        predicate_string = "{}(\"{}\", \"{}\", {}, {}, ".format(site_name,
-                                                       row["site.value"].split('http://www.wikidata.org/entity/')[1],
-                                                       row["siteLabel.value"], lat, lon)
+    with open("KB.pl", 'a+', encoding='utf8') as f_knowledge_base:
+        for _, row in results_df.iterrows():
+            # hard-coded coordinates of city walls entrance
+            # from Piazza dei Miracoli (source: Google Maps)
+            predicate_string = (
+                f"{site_name}"
+                f"(\"{row['site.value'].split('http://www.wikidata.org/entity/')[1]}\", "
+                f"\"{row['siteLabel.value']}\", "
+                f"{lat}"
+                f"{lon}, "
+            )
 
-        if 'siteAccessibilityLabel.value' in results_df:
-            if pd.notna(row["siteAccessibilityLabel.value"]):
-                predicate_string += "\"{}\", ".format(row["siteAccessibilityLabel.value"])
+            if 'siteAccessibilityLabel.value' in results_df:
+                if pd.notna(row['siteAccessibilityLabel.value']):
+                    predicate_string += f"\"{row['siteAccessibilityLabel.value']}\", "
+                else:
+                    predicate_string += f"{row['siteAccessibilityLabel.value']}, "
             else:
-                predicate_string += "{}, ".format(row["siteAccessibilityLabel.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
-        if 'siteTripAdvisorIdLabel.value' in results_df:
-            predicate_string += "{}, ".format(row["siteTripAdvisorIdLabel.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
-        if 'siteImage.value' in results_df:
-            if pd.notna(row["siteImage.value"]):
-                predicate_string += "\"{}\",".format(row["siteImage.value"])
+                predicate_string += f"{np.nan}, "
+            if 'siteTripAdvisorIdLabel.value' in results_df:
+                predicate_string += f"{row['siteTripAdvisorIdLabel.value']}, "
             else:
-                predicate_string += "{},".format(row["siteImage.value"])
-        else:
-            predicate_string += "{}, ".format(np.nan)
+                predicate_string += f"{np.nan}, "
+            if 'siteImage.value' in results_df:
+                if pd.notna(row['siteImage.value']):
+                    predicate_string += f"\"{row['siteImage.value']}\",".format()
+                else:
+                    predicate_string += f"{row['siteImage.value']},"
+            else:
+                predicate_string += f"{np.nan}, "
 
-        # random generated star
-        predicate_string += "{}".format(random.randrange(6))
+            # random generated star
+            predicate_string += f"{random.randrange(6)}"
 
-        predicate_string += ").\n"
-        predicate_string = re.sub(",+\)\.", ").", predicate_string)
-        f.write(predicate_string)
-    f.close()
+            predicate_string += ").\n"
+            predicate_string = re.sub(",+\)\.", ").", predicate_string)
+            f_knowledge_base.write(predicate_string)
 
 if __name__ == '__main__':
     main()
