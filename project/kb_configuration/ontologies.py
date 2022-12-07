@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+# TODO: documentation
 class Term:
     """ N-ary compound term: functor_name(v1, v2, ..., vN) """
     def __init__(self, name, *values):
@@ -13,13 +14,13 @@ class Term:
         arg_str = ','.join(map(str, self.values))
         return f"{self.name}({arg_str})."
 
+# TODO: documentation
 class Result:
     """ Simple data wrapper holding query results """
     def __init__(self, df):
         self.df = df
         self.terms = []
 
-    # TODO: make args optionally callable (for custom computations on keys)
     def function(self, name, *args, **kwargs) -> Result: 
         """ Fluent builder of n-ary functors """
 
@@ -50,13 +51,16 @@ class Result:
                     if v and pd.notna(v) and v_type == 'string':
                         v = f'\"{v}\"'
 
-
                 values.append(v)
 
             self.terms.append(Term(name, *values))
 
         return self
 
+    def format_terms(self):
+        return [str(term) + '\n' for term in self.terms]
+
+# TODO: documentation
 class WikiData:
     """ wikidata.org interface """
     def __init__(self, format=JSON):
