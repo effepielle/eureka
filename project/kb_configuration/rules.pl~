@@ -33,7 +33,7 @@ indoor(Label):-label(Id,Label), (type(Id,"church_building"); type(Id,"museum")).
 
 outdoor(Label,Image):- label(Id,Label), image(Id,Image), (type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
                                                          type(Id,"monument"); type(Id,"square")).
-outdoor(Label):- label(Id,Label), (type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls"); type(Id,"monument"); type(Id,"square")).
+outdoor(Label):- label(Id,Label), (type(Id,"park"); type(Id,"public garden"); type(Id,"city_walls"); type(Id,"monument"); type(Id,"square")).
 
 %if raining
 visitable_if_raining(Label,Image):- indoor(Label,Image).
