@@ -24,10 +24,10 @@ class Result:
         """ Fluent builder of n-ary functors """
 
         k_dict = kwargs.get('k_dict', {})
-        if k_dict:
-            args = k_dict.keys()
-
         v_dict = kwargs.get('v_dict', {})
+        default_type = kwargs.get('default_type', 'string')
+
+        args = set(args).union(k_dict.keys())
 
         assert all(type(arg) in [str] for arg in args)
 
@@ -45,7 +45,7 @@ class Result:
                     if v and pd.notna(v):
                         v = v_dict.get(arg, lambda x: x)(v)
 
-                    v_type = k_dict.get(arg, 'string')
+                    v_type = k_dict.get(arg, default_type)
                     if v and pd.notna(v) and v_type == 'string':
                         v = f'\"{v}\"'
 
