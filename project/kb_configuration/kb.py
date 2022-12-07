@@ -60,8 +60,9 @@ def init(filename):
             results.function("position", "site", "siteLon", "siteLat",
                            k_dict={"siteLon": 'float', "siteLat": 'float'},
                            v_dict=v_dict)
-            results.function("trip_advisor", "siteTripAdvisorIdLabel",
-                           k_dict={"siteTripAdvisorIdLabel": 'int'})
+            results.function("trip_advisor", "site", "siteTripAdvisorIdLabel",
+                           k_dict={"siteTripAdvisorIdLabel": 'int'},
+                           v_dict=v_dict)
             f_knowledge_base.writelines(results.format_terms())
 
 def main():

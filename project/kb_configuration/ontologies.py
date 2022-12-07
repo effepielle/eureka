@@ -26,6 +26,7 @@ class Result:
 
         k_dict = kwargs.get('k_dict', {})
         v_dict = kwargs.get('v_dict', {})
+        allow_empty = kwargs.get('allow_empty', False)
         default_type = kwargs.get('default_type', 'string')
 
         # concatenate keys and remove duplicates while preserving order
@@ -53,7 +54,9 @@ class Result:
 
                 values.append(v)
 
-            self.terms.append(Term(name, *values))
+            if allow_empty or (values and None not in values):
+                self.terms.append(Term(name, *values))
+
 
         return self
 
