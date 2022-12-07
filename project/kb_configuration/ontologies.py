@@ -27,20 +27,29 @@ class Result:
         if k_dict:
             args = k_dict.keys()
 
-        assert all(type(arg) in [str, callable] for arg in args)
+        v_dict = kwargs.get('v_dict', {})
+
+        assert all(type(arg) in [str] for arg in args)
 
         for _, row in self.df.iterrows():
             values = []
             for arg in args:
                 k = f"{arg}.value"
-                v = np.nan
+                # v = np.nan
+                v = None
                 if k in self.df:
                     v = row[k]
-                    # v = v if pd.notna(v) else None # TODO: remove if nan is needed
+                    v = v if pd.notna(v) else None # TODO: remove if nan is needed
+
+                    # apply optional computation to the value
+                    if v and pd.notna(v):
+                        v = v_dict.get(arg, lambda x: x)(v)
 
                     v_type = k_dict.get(arg, 'string')
                     if v and pd.notna(v) and v_type == 'string':
                         v = f'\"{v}\"'
+
+
                 values.append(v)
 
             self.terms.append(Term(name, *values))
