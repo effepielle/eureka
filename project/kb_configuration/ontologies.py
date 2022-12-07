@@ -20,17 +20,28 @@ class Result:
         self.terms = []
 
     # TODO: make args optionally callable (for custom computations on keys)
-    def function(self, name, *args) -> Result: 
+    def function(self, name, *args, **kwargs) -> Result: 
         """ Fluent builder of n-ary functors """
+
+        k_dict = kwargs.get('k_dict', {})
+        if k_dict:
+            args = k_dict.keys()
+
+        assert all(type(arg) in [str, callable] for arg in args)
+
         for _, row in self.df.iterrows():
             values = []
-            for k in args:
-                v = np.nan # TODO: why not use None?
+            for arg in args:
+                k = f"{arg}.value"
+                v = np.nan
                 if k in self.df:
                     v = row[k]
-                    if type(v) is str:
+                    # v = v if pd.notna(v) else None # TODO: remove if nan is needed
+
+                    v_type = k_dict.get(arg, 'string')
+                    if v and pd.notna(v) and v_type == 'string':
                         v = f'\"{v}\"'
-                values.append(v) # TODO: why not use None?
+                values.append(v)
 
             self.terms.append(Term(name, *values))
 
