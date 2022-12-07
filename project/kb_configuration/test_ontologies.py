@@ -31,10 +31,10 @@ def test_ontologies(verbose=False):
     q = compute_query("church_building", "Q16970")
 
     results = wikidata.query(q)
-    d = {"site": 'string', "siteLabel": 'string', "siteAccessibilityLabel": 'string', "siteTripAdvisorIdLabel": 'int', "siteLon": 'float' }
+    d = {"siteTripAdvisorIdLabel": 'int', "siteLon": 'float' }
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
 
-    results.function("f", k_dict=d, v_dict=v_dict)
+    results.function("f", "site", "siteLabel", "siteAccessibilityLabel", k_dict=d, v_dict=v_dict)
     kb = [str(term) for term in results.terms]
 
     if verbose:

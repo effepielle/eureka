@@ -27,7 +27,8 @@ class Result:
         v_dict = kwargs.get('v_dict', {})
         default_type = kwargs.get('default_type', 'string')
 
-        args = set(args).union(k_dict.keys())
+        # concatenate keys and remove duplicates while preserving order
+        args = list(dict.fromkeys(list(args) + list(k_dict.keys())))
 
         assert all(type(arg) in [str] for arg in args)
 
