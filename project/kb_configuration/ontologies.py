@@ -6,12 +6,20 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 # TODO: documentation
 class Term:
     """ N-ary compound term: functor_name(v1, v2, ..., vN) """
-    def __init__(self, name, *values):
+    def __init__(self, name, term_dict):
         self.name = name
-        self.values = values
+        self.term_dict = term_dict
+
+    def project(self, keys):
+        return Term(self.name,
+                {k: v for k, v in self.term_dict.items() if k in keys})
+
+    def hide(self, keys):
+        return Term(self.name,
+                {k: v for k, v in self.term_dict.items() if k not in keys})
 
     def __str__(self) -> str:
-        arg_str = ','.join(map(str, self.values))
+        arg_str = ','.join(map(str, self.term_dict.values()))
         return f"{self.name}({arg_str})."
 
 # TODO: documentation
@@ -21,13 +29,20 @@ class Result:
         self.df = df
         self.terms = []
 
+    def predicate(self, name, pred, *args, hidden=[], **kwargs) -> Result:
+        """ Fluent builder of n-ary predicates """
+        return self.function(name, *args, pred = pred, hidden=hidden, **kwargs)
+
     def function(self, name, *args, **kwargs) -> Result: 
         """ Fluent builder of n-ary functors """
 
+        # TODO: move to function definition
         k_dict = kwargs.get('k_dict', {})
         v_dict = kwargs.get('v_dict', {})
         allow_empty = kwargs.get('allow_empty', False)
         default_type = kwargs.get('default_type', 'string')
+        pred = kwargs.get('pred', None)
+        hidden = kwargs.get('hidden', [])
 
         # concatenate keys and remove duplicates while preserving order
         args = list(dict.fromkeys(list(args) + list(k_dict.keys())))
@@ -35,10 +50,9 @@ class Result:
         assert all(type(arg) in [str] for arg in args)
 
         for _, row in self.df.iterrows():
-            values = []
+            terms = {}
             for arg in args:
                 k = f"{arg}.value"
-                # v = np.nan
                 v = None
                 if k in self.df:
                     v = row[k]
@@ -52,13 +66,15 @@ class Result:
                     if v and pd.notna(v) and v_type == 'string':
                         v = f'\"{v}\"'
 
-                values.append(v)
+                terms[arg] = v
 
-            if allow_empty or (values and None not in values):
-                self.terms.append(Term(name, *values))
+            if pred is None or pred(terms):
+                if allow_empty or (terms and None not in terms.values()):
+                    self.terms.append(Term(name, terms).hide(hidden))
 
 
         return self
+
 
     def format_terms(self):
         return [str(term) + '\n' for term in self.terms]

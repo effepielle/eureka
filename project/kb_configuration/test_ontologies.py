@@ -50,20 +50,20 @@ def test_predicates(verbose=False):
     q = compute_query("church_building", "Q16970")
 
     results = wikidata.query(q)
-    d = {"siteTripAdvisorIdLabel": 'int', "siteLon": 'float' }
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
+    pred = lambda v: v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
+    results.predicate("wheelchair_friendly", pred, "site", "siteAccessibilityLabel", hidden=["siteAccessibilityLabel"], v_dict=v_dict)
 
-    results.function("f", "site", "siteLabel", "siteAccessibilityLabel", k_dict=d, v_dict=v_dict)
     kb = [str(term) for term in results.terms]
-
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("\"wheelchair accessible\"" in term for term in kb)
+    assert any("wheelchair_friendly" in term for term in kb)
 
 
 if __name__ == '__main__':
-    test_ontologies(verbose=True)
+    test_ontologies(verbose=False)
+    test_predicates(verbose=True)
     print('Tests passed')

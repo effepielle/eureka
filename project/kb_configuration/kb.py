@@ -47,6 +47,8 @@ def make_query(site_name, wikidata_id):
 def parse_id(string):
     return string.split('http://www.wikidata.org/entity/')[1]
 
+def wheelchair_friendly(v):
+    return v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
 def init(filename):
     wikidata = WikiData()
     v_dict = {"site": parse_id}
@@ -63,6 +65,10 @@ def init(filename):
             results.function("trip_advisor", "site", "siteTripAdvisorIdLabel",
                            k_dict={"siteTripAdvisorIdLabel": 'int'},
                            v_dict=v_dict)
+            results.predicate("wheelchair_friendly", wheelchair_friendly,
+                    "site", "siteAccessibilityLabel",
+                    hidden=["siteAccessibilityLabel"],
+                    v_dict=v_dict)
             f_knowledge_base.writelines(results.format_terms())
 
 def main():
