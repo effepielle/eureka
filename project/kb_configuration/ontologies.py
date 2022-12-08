@@ -32,29 +32,37 @@ class Term:
     def get(self, key) -> Any:
         return self._term_dict[key]
 
+    def get_dict(self) -> dict:
+        return self._term_dict.copy()
+
     def __str__(self) -> str:
         arg_str = ','.join(map(str, self._term_dict.values()))
         return f"{self._name}({arg_str})."
 
-class FunctionResult:
+class PredicateResult:
     def __init__(self, result, terms):
         self.result = result
         self.terms = terms
 
-    def constant(self, key, value) -> FunctionResult:
+    def constant(self, key, value) -> PredicateResult:
         self.terms = [term.value(key, value) for term in self.terms]
         return self
 
-    def closure(self, key, f) -> FunctionResult:
+    def closure(self, key, f) -> PredicateResult:
         assert callable(f)
         self.terms = [term.value(key, f()) for term in self.terms]
         return self
 
-    def project(self, *keys) -> FunctionResult:
+    def filter(self, f) -> PredicateResult:
+        assert callable(f)
+        self.terms = [term for term in self.terms if f(term.get_dict())]
+        return self
+
+    def project(self, *keys) -> PredicateResult:
         self.terms = [term.project(keys) for term in self.terms]
         return self
 
-    def hide(self, *keys) -> FunctionResult:
+    def hide(self, *keys) -> PredicateResult:
         self.terms = [term.hide(keys) for term in self.terms]
         return self
 
@@ -72,19 +80,14 @@ class Result:
     def add_terms(self, terms: [Term]) -> None:
         self.terms.extend(terms)
 
-    def predicate(self, name, pred, *args, **kwargs) -> Result:
+    def predicate(self, name, *args, **kwargs) -> PredicateResult: 
         """ Fluent builder of n-ary predicates """
-        return self.function(name, *args, pred = pred, **kwargs)
-
-    def function(self, name, *args, **kwargs) -> FunctionResult: 
-        """ Fluent builder of n-ary functors """
 
         # TODO: move to function definition
         k_dict = kwargs.get('k_dict', {})
         v_dict = kwargs.get('v_dict', {})
         allow_empty = kwargs.get('allow_empty', False)
         default_type = kwargs.get('default_type', 'string')
-        pred = kwargs.get('pred', None)
 
         # concatenate keys and remove duplicates while preserving order
         args = list(dict.fromkeys(list(args) + list(k_dict.keys())))
@@ -111,14 +114,13 @@ class Result:
 
                 terms[arg] = v
 
-            if pred is None or pred(terms):
-                if allow_empty or (terms and None not in terms.values()):
-                    new_terms.append(Term(name, terms))
+            if allow_empty or (terms and None not in terms.values()):
+                new_terms.append(Term(name, terms))
 
-        return FunctionResult(self, new_terms)
+        return PredicateResult(self, new_terms)
 
 
-    def format_terms(self):
+    def format_predicates(self):
         return [str(term) + '\n' for term in self.terms]
 
 # TODO: documentation

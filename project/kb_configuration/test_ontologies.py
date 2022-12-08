@@ -36,7 +36,7 @@ def test_ontologies(verbose=False):
     d = {"siteTripAdvisorIdLabel": 'int', "siteLon": 'float' }
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
 
-    results.function("tuple", "site", "siteLabel", "siteAccessibilityLabel", k_dict=d, v_dict=v_dict) \
+    results.predicate("tuple", "site", "siteLabel", "siteAccessibilityLabel", k_dict=d, v_dict=v_dict) \
             .build()
 
     kb = [str(term) for term in results.terms]
@@ -49,14 +49,15 @@ def test_ontologies(verbose=False):
     assert any("\"wheelchair accessible\"" in term for term in kb)
 
 # TODO
-def test_predicates(verbose=False):
+def test_predicate_filters(verbose=False):
     wikidata = WikiData()
     q = compute_query("church_building", "Q16970")
 
     results = wikidata.query(q)
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
-    pred = lambda v: v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
-    results.predicate("wheelchair_friendly", pred, "site", "siteAccessibilityLabel", v_dict=v_dict) \
+    f = lambda v: v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
+    results.predicate("wheelchair_friendly", "site", "siteAccessibilityLabel", v_dict=v_dict) \
+            .filter(f) \
             .project("site") \
             .build()
 
@@ -69,14 +70,14 @@ def test_predicates(verbose=False):
     assert any("wheelchair_friendly" in term for term in kb)
 
 
-def test_function_constants(verbose=False):
+def test_predicate_constants(verbose=False):
     wikidata = WikiData()
     q = compute_query("church_building", "Q16970")
 
     results = wikidata.query(q)
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
 
-    results.function("type", "site", v_dict=v_dict) \
+    results.predicate("type", "site", v_dict=v_dict) \
             .constant("class", "church_building") \
             .build()
 
@@ -89,14 +90,14 @@ def test_function_constants(verbose=False):
     assert kb
     assert any("\"church_building\"" in term for term in kb)
 
-def test_function_closures(verbose=False):
+def test_predicate_closures(verbose=False):
     wikidata = WikiData()
     q = compute_query("church_building", "Q16970")
 
     results = wikidata.query(q)
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
 
-    results.function("star", "site", v_dict=v_dict) \
+    results.predicate("star", "site", v_dict=v_dict) \
             .closure("stars", partial(random.randrange, 6)) \
             .build()
 
@@ -115,7 +116,7 @@ def test_function_closures(verbose=False):
 
 if __name__ == '__main__':
     test_ontologies(verbose=True)
-    test_predicates(verbose=True)
-    test_function_constants(verbose=True)
-    test_function_closures(verbose=True)
+    test_predicate_filters(verbose=True)
+    test_predicate_constants(verbose=True)
+    test_predicate_closures(verbose=True)
     print('Tests passed')

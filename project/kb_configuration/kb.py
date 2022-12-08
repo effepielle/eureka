@@ -56,42 +56,44 @@ def init(filename):
             q = make_query(site_name, site_wikidata_id)
             results = wikidata.query(q)
 
-            # Site label functions
-            results.function("label", "site", "siteLabel", v_dict=v_dict) \
+            # Site label predicates
+            results.predicate("label", "site", "siteLabel", v_dict=v_dict) \
                     .build()
 
-            # Site geoposition functions
-            results.function("position", "site", "siteLon", "siteLat",
+            # Site geoposition predicates
+            results.predicate("position", "site", "siteLon", "siteLat",
                     k_dict={"siteLon": 'float', "siteLat": 'float'},
                     v_dict=v_dict) \
                             .build()
 
-            # Site tripadvisor id functions
-            results.function("trip_advisor", "site", "siteTripAdvisorIdLabel",
+            # Site tripadvisor id predicates
+            results.predicate("trip_advisor", "site", "siteTripAdvisorIdLabel",
                     k_dict={"siteTripAdvisorIdLabel": 'int'},
                     v_dict=v_dict) \
                             .build()
 
-            # Site (random) rating functions
-            results.function("star", "site", v_dict=v_dict) \
+            # Site (random) rating predicates
+            results.predicate("star", "site", v_dict=v_dict) \
                     .closure("stars", partial(random.randrange, 6)) \
                     .build()
 
-            # Site type function
-            results.function("type", "site", v_dict=v_dict) \
+            # Site type predicates
+            results.predicate("type", "site", v_dict=v_dict) \
                     .constant("site_class", site_name) \
                     .build()
 
-            # Site image function
-            results.function("image", "site", "siteImage", v_dict=v_dict) \
+            # Site image predicates
+            results.predicate("image", "site", "siteImage", v_dict=v_dict) \
                     .build()
 
-            # Site wheelchair accessibility predicate
-            results.predicate("wheelchair_friendly", wheelchair_friendly,
-                    "site", "siteAccessibilityLabel", v_dict=v_dict) \
+            # Site wheelchair accessibility predicates
+            results.predicate("wheelchair_friendly", "site",
+                    "siteAccessibilityLabel", v_dict=v_dict) \
+                            .filter(wheelchair_friendly) \
                             .project("site") \
                             .build()
-            f_knowledge_base.writelines(results.format_terms())
+
+            f_knowledge_base.writelines(results.format_predicates())
 
 def main():
     init('KB_new.pl')
