@@ -71,6 +71,10 @@ def init(filename):
                     v_dict=v_dict) \
                             .build()
 
+            results.function("type", "site", v_dict=v_dict) \
+                    .constant("site_class", site_name) \
+                    .build()
+
             results.predicate("wheelchair_friendly", wheelchair_friendly,
                     "site", "siteAccessibilityLabel",
                     hidden=["siteAccessibilityLabel"],
