@@ -47,11 +47,15 @@ def parse_id(string):
 
 def wheelchair_friendly(v):
     return v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
-def init(filename):
+
+def init(filename, rules_file=None):
     wikidata = WikiData()
     v_dict = {"site": parse_id}
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
+        if rules_file:
+            f_knowledge_base.write(f":-include(\"{rules_file}\").\n\n")
+
         for site_name, site_wikidata_id in wikidata_dict.items():
             q = make_query(site_name, site_wikidata_id)
             results = wikidata.query(q)
@@ -96,7 +100,7 @@ def init(filename):
             f_knowledge_base.writelines(results.format_predicates())
 
 def main():
-    init('KB_new.pl')
+    init('KB_new.pl', rules_file='rules.pl')
 
 if __name__ == '__main__':
     main()
