@@ -18,7 +18,7 @@ wikidata_dict = {
     #TODO Marco and Giacomo: add more items
 }
 
-def make_query(site_name, wikidata_id):
+def make_query(wikidata_id):
     return """
     SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
     {
@@ -58,7 +58,7 @@ def init(filename, rules_file=None):
             f_knowledge_base.write(f":-include(\"{rules_file}\").\n\n")
 
         for site_name, site_wikidata_id in wikidata_dict.items():
-            q = make_query(site_name, site_wikidata_id)
+            q = make_query(site_wikidata_id)
             results = wikidata.query(q)
 
             # Site label predicates

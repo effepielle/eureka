@@ -102,14 +102,14 @@ class Result:
                 v = None
                 if k in self.df:
                     v = row[k]
-                    v = v if pd.notna(v) else None # TODO: remove if nan is needed
+                    v = v if pd.notna(v) else None
 
                     # apply optional computation to the value
-                    if v and pd.notna(v):
+                    if pd.notna(v):
                         v = v_dict.get(arg, lambda x: x)(v)
 
                     v_type = k_dict.get(arg, default_type)
-                    if v and pd.notna(v) and v_type == 'string':
+                    if pd.notna(v) and v_type == 'string':
                         v = pad_string(v)
 
                 terms[arg] = v
