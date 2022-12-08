@@ -101,6 +101,8 @@ def init(filename, rules_file=None):
 
 def main():
     init('KB_new.pl', rules_file='rules.pl')
+    # Ugly hack to sort facts
+    exec("sort project/kb_configuration/KB_new.pl -u -o project/kb_configuration/KB_new.pl")
 
 if __name__ == '__main__':
     main()
