@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from ontologies import WikiData, Result
+from functools import partial
+import random
 
 def compute_query(site_name, wikidata_id):
     return """
@@ -87,9 +89,33 @@ def test_function_constants(verbose=False):
     assert kb
     assert any("\"church_building\"" in term for term in kb)
 
+def test_function_closures(verbose=False):
+    wikidata = WikiData()
+    q = compute_query("church_building", "Q16970")
+
+    results = wikidata.query(q)
+    v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
+
+    results.function("star", "site", v_dict=v_dict) \
+            .closure("stars", partial(random.randrange, 6)) \
+            .build()
+
+    kb = [str(term) for term in results.terms]
+
+    if verbose:
+        print('\n'.join(kb))
+
+    assert results
+    assert kb
+    assert any("star" in term for term in kb)
+    stars = [term.get("stars") for term in results.terms] 
+    assert not(stars.count(stars[0]) == len(stars))
+
+
 
 if __name__ == '__main__':
     test_ontologies(verbose=True)
     test_predicates(verbose=True)
     test_function_constants(verbose=True)
+    test_function_closures(verbose=True)
     print('Tests passed')

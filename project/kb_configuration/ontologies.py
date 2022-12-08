@@ -22,7 +22,15 @@ class Term:
                 {k: v for k, v in self._term_dict.items() if k not in keys})
 
     def value(self, key, value) -> Term:
-        return Term(self._name, dict(self._term_dict, key=value))
+        if type(value) is str:
+            value = pad_string(value)
+
+        new_dict = self._term_dict.copy()
+        new_dict[key] = value
+        return Term(self._name, new_dict)
+
+    def get(self, key) -> Any:
+        return self._term_dict[key]
 
     def __str__(self) -> str:
         arg_str = ','.join(map(str, self._term_dict.values()))
@@ -33,17 +41,20 @@ class FunctionResult:
         self.result = result
         self.terms = terms
 
-    def constant(self, key, value, vtype='string'):
-        if vtype == 'string':
-            value = pad_string(value)
+    def constant(self, key, value) -> FunctionResult:
         self.terms = [term.value(key, value) for term in self.terms]
         return self
 
-    def project(self, *keys):
+    def closure(self, key, f) -> FunctionResult:
+        assert callable(f)
+        self.terms = [term.value(key, f()) for term in self.terms]
+        return self
+
+    def project(self, *keys) -> FunctionResult:
         self.terms = [term.project(keys) for term in self.terms]
         return self
 
-    def hide(self, *keys):
+    def hide(self, *keys) -> FunctionResult:
         self.terms = [term.hide(keys) for term in self.terms]
         return self
 
