@@ -3,7 +3,6 @@
 image("Q1031614","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Camposanto%20monumentale%2001.JPG").
 image("Q1031614","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Camposanto%20monumentale%2C%20esterno.JPG").
 image("Q1081881","http://commons.wikimedia.org/wiki/Special:FilePath/Claustro%20San%20Matteo%20Pisa%2008.jpg").
-image("Q1081881","http://commons.wikimedia.org/wiki/Special:FilePath/Claustro%20San%20Matteo%20Pisa%2008.jpg").
 image("Q1102884","http://commons.wikimedia.org/wiki/Special:FilePath/San%20Rocco%20Pisa.jpg").
 image("Q111820483","http://commons.wikimedia.org/wiki/Special:FilePath/Palazzo%20della%20Sapienza%20-%20Monumento%20agli%20studenti%20caduti%20nella%20Prima%20guerra%20mondiale%20%282009%2C%202%29.jpg").
 image("Q1121868","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20di%20san%20domenico%20%28pisa%29%2C%20esterno.JPG").
@@ -11,9 +10,7 @@ image("Q112198270","http://commons.wikimedia.org/wiki/Special:FilePath/Palazzo%2
 image("Q112248217","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%2C%20via%20della%20faggiola%2C%20targa%20leopardi.JPG").
 image("Q112894640","http://commons.wikimedia.org/wiki/Special:FilePath/Piazza%20Giuseppe%20Mazzini%2C%20Pisa.jpg").
 image("Q1278477","http://commons.wikimedia.org/wiki/Special:FilePath/PisaBaptistry20020323%20rectilinear.jpg").
-image("Q1278477","http://commons.wikimedia.org/wiki/Special:FilePath/PisaBaptistry20020323%20rectilinear.jpg").
 image("Q1423910","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20di%20San%20Paolo%20a%20Ripa%20d%27Arno%2C%20facciata%2001.JPG").
-image("Q1426967","http://commons.wikimedia.org/wiki/Special:FilePath/Esgl%C3%A9sia%20de%20Santa%20Maria%20della%20Spina%20de%20Pisa.JPG").
 image("Q1426967","http://commons.wikimedia.org/wiki/Special:FilePath/Esgl%C3%A9sia%20de%20Santa%20Maria%20della%20Spina%20de%20Pisa.JPG").
 image("Q16540276","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20San%20Marco%20alle%20Cappelle%202%2C%20Pisa.JPG").
 image("Q1754247","http://commons.wikimedia.org/wiki/Special:FilePath/Duomo%20of%20the%20Archdiocese%20of%20Pisa.jpeg").
@@ -25,7 +22,6 @@ image("Q281259","http://commons.wikimedia.org/wiki/Special:FilePath/Santa%20Apol
 image("Q3328407","http://commons.wikimedia.org/wiki/Special:FilePath/Cortile%20dell%27opera%20del%20duomo%2001.JPG").
 image("Q3328411","http://commons.wikimedia.org/wiki/Special:FilePath/Museo%20delle%20navi%20antiche%20di%20Pisa%2C%20interno%2001.jpg").
 image("Q3328416","http://commons.wikimedia.org/wiki/Special:FilePath/Interior%20del%20Museu%20delle%20Sinopie%20de%20Pisa.JPG").
-image("Q3328416","http://commons.wikimedia.org/wiki/Special:FilePath/Interior%20del%20Museu%20delle%20Sinopie%20de%20Pisa.JPG").
 image("Q3502492","http://commons.wikimedia.org/wiki/Special:FilePath/San%20Michele%20degli%20Scalzi%20facciata.jpg").
 image("Q3504517","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20San%20Pietro%20in%20Vinculis%20%28facciata%29.JPG").
 image("Q3504760","http://commons.wikimedia.org/wiki/Special:FilePath/San%20Frediano%2C%20Pisa%2C%20May%202013%20%2801%29.JPG").
@@ -33,8 +29,6 @@ image("Q3504816","http://commons.wikimedia.org/wiki/Special:FilePath/Sant%27Andr
 image("Q3504833","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20San%20Silvestro%2C%20Pisa.jpg").
 image("Q3504949","http://commons.wikimedia.org/wiki/Special:FilePath/San%20Donnino%2C%20Pisa.JPG").
 image("Q3505107","http://commons.wikimedia.org/wiki/Special:FilePath/Exterior%20of%20San%20Zeno%20%28Pisa%29%2002.jpg").
-image("Q3505107","http://commons.wikimedia.org/wiki/Special:FilePath/Exterior%20of%20San%20Zeno%20%28Pisa%29%2002.jpg").
-image("Q3505107","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Chiesa%20di%20San%20Zeno.JPG").
 image("Q3505107","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Chiesa%20di%20San%20Zeno.JPG").
 image("Q3505115","http://commons.wikimedia.org/wiki/Special:FilePath/Santa%20Caterina%20%28Pisa%29%2002.jpg").
 image("Q3505132","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20san%20Sisto.JPG").
@@ -76,7 +70,6 @@ image("Q3713392","http://commons.wikimedia.org/wiki/Special:FilePath/DomusMazzin
 image("Q377892","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20dei%20Santi%20Iacopo%20e%20Filippo%20-%20Facade.jpg").
 image("Q3868418","http://commons.wikimedia.org/wiki/Special:FilePath/Museo%20degli%20strumenti%20per%20il%20calcolo%2C%20seconda%20sala%2002.jpg").
 image("Q3890226","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Palazzo%20blu.JPG").
-image("Q3890226","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Palazzo%20blu.JPG").
 image("Q3902168","http://commons.wikimedia.org/wiki/Special:FilePath/Piazza%20carrara%2C%20pisa%2001.JPG").
 image("Q3902249","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20-%20Piazza%20Martiri%20della%20Libert%C3%A0%2001.JPG").
 image("Q3902469","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20Mura%20Piazza%20delle%20Gondole.JPG").
@@ -99,8 +92,6 @@ image("Q750245","http://commons.wikimedia.org/wiki/Special:FilePath/Italy%20-%20
 image("Q768559","http://commons.wikimedia.org/wiki/Special:FilePath/Chiesa%20San%20Torp%C3%A9%2C%20Pisa.JPG").
 image("Q783096","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa-%20chiesa%20di%20san%20giorgio%20dei%20tedeschi.JPG").
 image("Q810100","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20Grado%2001.jpg").
-image("Q810100","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20Grado%2001.jpg").
-image("Q894670","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%2C%20orto%20botanico%2C%20zona%20antica%2C%20della%20scuola%20botanica%2021.jpg").
 image("Q894670","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%2C%20orto%20botanico%2C%20zona%20antica%2C%20della%20scuola%20botanica%2021.jpg").
 image("Q941727","http://commons.wikimedia.org/wiki/Special:FilePath/Museo%20San%20Matteo%20di%20Pisa.JPG").
 image("Q95979838","http://commons.wikimedia.org/wiki/Special:FilePath/Pisa%20180.jpg").
@@ -108,8 +99,6 @@ image("Q966515","http://commons.wikimedia.org/wiki/Special:FilePath/Palazzo%20Re
 image("Q97099372","http://commons.wikimedia.org/wiki/Special:FilePath/20-06-16%20Pisa%20via%20Santa%20Lucia%20edicola%20sacra.jpg").
 image("Q98215987","http://commons.wikimedia.org/wiki/Special:FilePath/20-09-08%20Museo%20Aviotruppe%20Pisa%2048.jpg").
 label("Q1031614","Campo santo").
-label("Q1031614","Campo santo").
-label("Q1081881","National Museum of San Matteo").
 label("Q1081881","National Museum of San Matteo").
 label("Q1102884","Church of St. Rocco").
 label("Q111820483","War memorial in Palazzo della Sapienza").
@@ -125,9 +114,7 @@ label("Q112866496","Monument to the Fallen of the Acqui Division").
 label("Q112894640","piazza Giuseppe Mazzini").
 label("Q115388585","Piazza XX Settembre").
 label("Q1278477","Baptistry San Giovanni").
-label("Q1278477","Baptistry San Giovanni").
 label("Q1423910","San Paolo a Ripa d'Arno").
-label("Q1426967","Santa Maria della Spina").
 label("Q1426967","Santa Maria della Spina").
 label("Q16540276","San Marco alle Cappelle").
 label("Q1754247","Pisa Cathedral").
@@ -139,16 +126,12 @@ label("Q281259","Santa Apollonia").
 label("Q3328407","Museo dell'Opera del Duomo").
 label("Q3328411","Museo delle Navi Antiche").
 label("Q3328416","Museo delle Sinopie del Camposanto monumentale").
-label("Q3328416","Museo delle Sinopie del Camposanto monumentale").
 label("Q3502492","San Michele degli Scalzi").
 label("Q3504517","San Pietro in Vinculis").
 label("Q3504760","San Frediano").
 label("Q3504816","Sant'Andrea Forisportam").
 label("Q3504833","San Silvestro").
 label("Q3504949","San Donnino").
-label("Q3505107","San Zeno").
-label("Q3505107","San Zeno").
-label("Q3505107","San Zeno").
 label("Q3505107","San Zeno").
 label("Q3505115","Santa Caterina").
 label("Q3505132","San Sisto").
@@ -174,8 +157,6 @@ label("Q3672682","Sant'Antonio Abate").
 label("Q3672722","Sant'Antonio in Qualconia").
 label("Q3672945","Santa Cecilia").
 label("Q3672967","Santa Chiara").
-label("Q3672967","Santa Chiara").
-label("Q3673046","Santa Eufrasia").
 label("Q3673046","Santa Eufrasia").
 label("Q3673384","Santa Maria Ausiliatrice").
 label("Q3673446","Santa Maria Maddalena").
@@ -189,7 +170,6 @@ label("Q3678366","Cittadella Nuova").
 label("Q3713392","Domus mazziniana").
 label("Q377892","Santi Jacopo e Filippo").
 label("Q3868418","Museum of Computing Instruments").
-label("Q3890226","Palazzo Blu").
 label("Q3890226","Palazzo Blu").
 label("Q3902168","Piazza Carrara").
 label("Q3902249","Piazza Martiri della Libertà").
@@ -213,15 +193,12 @@ label("Q750245","Piazza del Duomo, Pisa").
 label("Q768559","San Torpè").
 label("Q783096","San Giorgio ai Tedeschi").
 label("Q810100","Church of Saint Peter a Grado").
-label("Q810100","Church of Saint Peter a Grado").
-label("Q894670","Pisa Botanic Garden and Museum").
 label("Q894670","Pisa Botanic Garden and Museum").
 label("Q941727","San Matteo").
 label("Q95979838","Piazza del Duomo").
 label("Q966515","Royal Palace National Museum").
 label("Q97099372","Wayside shrine in Via Santa Lucia").
 label("Q98215987","Museo Storico delle Aviotruppe").
-position("Q1031614",10.39495,43.724).
 position("Q1031614",10.39495,43.724).
 position("Q1081881",10.40745,43.71463).
 position("Q1081881",10.407747,43.715202).
@@ -239,9 +216,7 @@ position("Q112866496",10.4097,43.70983).
 position("Q112894640",10.40693,43.71486).
 position("Q115388585",10.4016,43.7154).
 position("Q1278477",10.3942,43.72327).
-position("Q1278477",10.3942,43.72327).
 position("Q1423910",10.3935,43.71291667).
-position("Q1426967",10.39673,43.71524).
 position("Q1426967",10.39673,43.71524).
 position("Q16540276",10.408021,43.707033).
 position("Q1754247",10.395996,43.722664).
@@ -260,9 +235,6 @@ position("Q3504760",10.399372,43.717964).
 position("Q3504816",10.40578,43.71625).
 position("Q3504833",10.41016,43.71438).
 position("Q3504949",10.39766111,43.70695278).
-position("Q3505107",10.407531,43.723).
-position("Q3505107",10.407531,43.723).
-position("Q3505107",10.407531,43.723).
 position("Q3505107",10.407531,43.723).
 position("Q3505115",10.40465,43.72113).
 position("Q3505132",10.39888333,43.71950833).
@@ -288,8 +260,6 @@ position("Q3672682",10.39797,43.71099).
 position("Q3672722",10.39464,43.71311).
 position("Q3672945",10.40339,43.71837).
 position("Q3672967",10.39539444,43.72166389).
-position("Q3672967",10.39539444,43.72166389).
-position("Q3673046",10.39828,43.71972).
 position("Q3673046",10.39828,43.71972).
 position("Q3673384",10.27428,43.67393).
 position("Q3673446",10.39868,43.7147).
@@ -327,7 +297,6 @@ position("Q750245",10.395277777778,43.723333333333).
 position("Q768559",10.4022,43.7219).
 position("Q783096",10.39715,43.72177).
 position("Q810100",10.34666667,43.67972222).
-position("Q810100",10.34666667,43.67972222).
 position("Q894670",10.395833333333,43.719722222222).
 position("Q894670",10.397175,43.719843).
 position("Q941727",10.40756,43.71448).
@@ -335,133 +304,126 @@ position("Q95979838",10.395996,43.722664).
 position("Q966515",10.396977,43.716296).
 position("Q97099372",10.395239,43.716163).
 position("Q98215987",10.40735,43.7297).
-star("Q1031614",1).
 star("Q1031614",5).
-star("Q1081881",2).
-star("Q1081881",4).
+star("Q1081881",0).
+star("Q1081881",3).
 star("Q1102884",4).
-star("Q111820483",0).
-star("Q1121868",1).
-star("Q112198270",0).
-star("Q112199227",4).
-star("Q112245918",0).
-star("Q112248130",3).
-star("Q112248217",3).
-star("Q112248502",1).
+star("Q111820483",1).
+star("Q1121868",3).
+star("Q112198270",3).
+star("Q112199227",2).
+star("Q112245918",4).
+star("Q112248130",2).
+star("Q112248217",1).
+star("Q112248502",5).
 star("Q112865931",4).
-star("Q112866496",3).
-star("Q112894640",4).
-star("Q115388585",5).
+star("Q112866496",1).
+star("Q112894640",0).
+star("Q115388585",0).
 star("Q1278477",0).
-star("Q1278477",5).
-star("Q1423910",2).
-star("Q1426967",2).
+star("Q1278477",3).
+star("Q1423910",5).
 star("Q1426967",3).
-star("Q16540276",3).
-star("Q1754247",4).
-star("Q1784719",5).
-star("Q18785542",5).
-star("Q20009137",3).
-star("Q23036926",0).
-star("Q281259",4).
+star("Q1426967",5).
+star("Q16540276",1).
+star("Q1754247",0).
+star("Q1784719",4).
+star("Q18785542",0).
+star("Q20009137",4).
+star("Q23036926",2).
+star("Q281259",2).
 star("Q3328407",1).
-star("Q3328411",4).
-star("Q3328416",0).
-star("Q3328416",0).
-star("Q3502492",0).
-star("Q3504517",1).
-star("Q3504760",4).
-star("Q3504816",0).
-star("Q3504833",0).
-star("Q3504949",5).
-star("Q3505107",0).
-star("Q3505107",0).
+star("Q3328411",2).
+star("Q3328416",2).
+star("Q3328416",3).
+star("Q3502492",3).
+star("Q3504517",0).
+star("Q3504760",2).
+star("Q3504816",3).
+star("Q3504833",5).
+star("Q3504949",0).
+star("Q3505107",1).
+star("Q3505107",2).
 star("Q3505107",3).
-star("Q3505107",5).
-star("Q3505115",0).
-star("Q3505132",4).
-star("Q3506514",3).
-star("Q3506865",4).
-star("Q3506968",4).
-star("Q3657315",4).
-star("Q3657318",4).
-star("Q3657343",3).
-star("Q3657635",1).
-star("Q3668478",3).
-star("Q3668916",3).
-star("Q3669601",5).
-star("Q3670083",3).
-star("Q3670542",5).
-star("Q3670640",2).
+star("Q3505115",2).
+star("Q3505132",0).
+star("Q3506514",2).
+star("Q3506865",3).
+star("Q3506968",2).
+star("Q3657315",1).
+star("Q3657318",2).
+star("Q3657343",1).
+star("Q3657635",4).
+star("Q3668478",1).
+star("Q3668916",4).
+star("Q3669601",4).
+star("Q3670083",2).
+star("Q3670542",4).
+star("Q3670640",4).
 star("Q3671012",3).
-star("Q3671060",1).
+star("Q3671060",4).
 star("Q3671296",1).
 star("Q3671449",0).
-star("Q3671848",0).
-star("Q3672682",1).
+star("Q3671848",4).
+star("Q3672682",4).
 star("Q3672722",5).
-star("Q3672945",5).
-star("Q3672967",3).
-star("Q3672967",5).
+star("Q3672945",2).
+star("Q3672967",2).
+star("Q3672967",4).
 star("Q3673046",0).
-star("Q3673046",1).
+star("Q3673046",2).
 star("Q3673384",0).
-star("Q3673446",4).
-star("Q3673712",0).
-star("Q3674172",2).
+star("Q3673446",5).
+star("Q3673712",2).
+star("Q3674172",5).
 star("Q3674338",5).
 star("Q3674348",2).
-star("Q3674391",0).
-star("Q3674395",3).
-star("Q3678366",5).
-star("Q3713392",1).
-star("Q377892",0).
+star("Q3674391",4).
+star("Q3674395",5).
+star("Q3678366",4).
+star("Q3713392",4).
+star("Q377892",3).
 star("Q3868418",4).
-star("Q3890226",3).
-star("Q3890226",5).
-star("Q3902168",5).
-star("Q3902249",2).
-star("Q3902469",2).
-star("Q3995191",3).
-star("Q4011005",0).
-star("Q428178",3).
-star("Q54624264",4).
-star("Q55180108",5).
+star("Q3890226",0).
+star("Q3890226",1).
+star("Q3902168",3).
+star("Q3902249",3).
+star("Q3902469",3).
+star("Q3995191",4).
+star("Q4011005",5).
+star("Q428178",5).
+star("Q54624264",0).
+star("Q55180108",4).
 star("Q55180231",3).
-star("Q55379304",4).
-star("Q585547",4).
-star("Q60869245",1).
-star("Q60870374",1).
-star("Q61706705",3).
-star("Q63196413",5).
-star("Q63617109",0).
-star("Q64732771",3).
-star("Q679053",2).
-star("Q750245",5).
+star("Q55379304",0).
+star("Q585547",2).
+star("Q60869245",4).
+star("Q60870374",5).
+star("Q61706705",4).
+star("Q63196413",3).
+star("Q63617109",1).
+star("Q64732771",2).
+star("Q679053",1).
+star("Q750245",2).
 star("Q768559",1).
-star("Q783096",0).
-star("Q810100",1).
-star("Q810100",1).
-star("Q894670",0).
-star("Q894670",4).
-star("Q941727",2).
-star("Q95979838",0).
-star("Q966515",3).
-star("Q97099372",5).
-star("Q98215987",2).
-trip_advisor("Q1031614",195929).
+star("Q783096",5).
+star("Q810100",3).
+star("Q810100",4).
+star("Q894670",3).
+star("Q894670",5).
+star("Q941727",3).
+star("Q95979838",1).
+star("Q966515",5).
+star("Q97099372",0).
+star("Q98215987",0).
 trip_advisor("Q1031614",195929).
 trip_advisor("Q1081881",195719).
-trip_advisor("Q1081881",195719).
-trip_advisor("Q1278477",243043).
 trip_advisor("Q1278477",243043).
 trip_advisor("Q1423910",2536416).
-trip_advisor("Q1426967",195921).
 trip_advisor("Q1426967",195921).
 trip_advisor("Q1754247",243045).
 trip_advisor("Q1784719",195717).
 trip_advisor("Q3328411",17626070).
-trip_advisor("Q3328416",243052).
 trip_advisor("Q3328416",243052).
 trip_advisor("Q3502492",8489395).
 trip_advisor("Q3504760",12150599).
@@ -472,20 +434,15 @@ trip_advisor("Q3673712",8599364).
 trip_advisor("Q3674338",9834505).
 trip_advisor("Q3868418",7052848).
 trip_advisor("Q3890226",2161456).
-trip_advisor("Q3890226",2161456).
 trip_advisor("Q3995191",246495).
 trip_advisor("Q4011005",10638421).
 trip_advisor("Q61706705",11535833).
 trip_advisor("Q750245",2210804).
 trip_advisor("Q810100",5971721).
-trip_advisor("Q810100",5971721).
-trip_advisor("Q894670",2179780).
 trip_advisor("Q894670",2179780).
 trip_advisor("Q966515",195720).
 trip_advisor("Q98215987",4306929).
 type("Q1031614","museum").
-type("Q1031614","museum").
-type("Q1081881","museum").
 type("Q1081881","museum").
 type("Q1102884","church_building").
 type("Q111820483","monument").
@@ -515,7 +472,6 @@ type("Q281259","church_building").
 type("Q3328407","museum").
 type("Q3328411","museum").
 type("Q3328416","museum").
-type("Q3328416","museum").
 type("Q3502492","church_building").
 type("Q3504517","church_building").
 type("Q3504760","church_building").
@@ -523,8 +479,6 @@ type("Q3504816","church_building").
 type("Q3504833","church_building").
 type("Q3504949","church_building").
 type("Q3505107","church_building").
-type("Q3505107","church_building").
-type("Q3505107","museum").
 type("Q3505107","museum").
 type("Q3505115","church_building").
 type("Q3505132","church_building").
@@ -550,8 +504,6 @@ type("Q3672682","church_building").
 type("Q3672722","church_building").
 type("Q3672945","church_building").
 type("Q3672967","church_building").
-type("Q3672967","church_building").
-type("Q3673046","church_building").
 type("Q3673046","church_building").
 type("Q3673384","church_building").
 type("Q3673446","church_building").
@@ -565,7 +517,6 @@ type("Q3678366","public_garden").
 type("Q3713392","museum").
 type("Q377892","church_building").
 type("Q3868418","museum").
-type("Q3890226","museum").
 type("Q3890226","museum").
 type("Q3902168","square").
 type("Q3902249","square").
@@ -591,28 +542,21 @@ type("Q783096","church_building").
 type("Q810100","church_building").
 type("Q810100","museum").
 type("Q894670","museum").
-type("Q894670","museum").
 type("Q941727","church_building").
 type("Q95979838","square").
 type("Q966515","museum").
 type("Q97099372","monument").
 type("Q98215987","museum").
 wheelchair_friendly("Q1031614").
-wheelchair_friendly("Q1031614").
 wheelchair_friendly("Q1081881").
-wheelchair_friendly("Q1081881").
-wheelchair_friendly("Q1278477").
 wheelchair_friendly("Q1278477").
 wheelchair_friendly("Q1754247").
 wheelchair_friendly("Q3328407").
 wheelchair_friendly("Q3328416").
-wheelchair_friendly("Q3328416").
 wheelchair_friendly("Q3713392").
 wheelchair_friendly("Q3868418").
 wheelchair_friendly("Q3890226").
-wheelchair_friendly("Q3890226").
 wheelchair_friendly("Q55379304").
 wheelchair_friendly("Q60870374").
-wheelchair_friendly("Q894670").
 wheelchair_friendly("Q894670").
 wheelchair_friendly("Q966515").

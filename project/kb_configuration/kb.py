@@ -51,7 +51,7 @@ def wheelchair_friendly(v):
 def init(filename, rules_file=None):
     wikidata = WikiData()
     v_dict = {"site": parse_id}
-    predicates = []
+    predicates = set()
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
         if rules_file:
@@ -98,7 +98,7 @@ def init(filename, rules_file=None):
                             .project("site") \
                             .build()
 
-            predicates.extend(results.format_predicates())
+            predicates.update(results.format_predicates())
 
         f_knowledge_base.writelines(sorted(predicates))
 
