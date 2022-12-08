@@ -3,24 +3,45 @@ import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+def pad_string(s, pad='"'):
+    return f"{pad}{s}{pad}"
+
 # TODO: documentation
 class Term:
-    """ N-ary compound term: functor_name(v1, v2, ..., vN) """
+    """ Immutable N-ary compound term: functor_name(v1, v2, ..., vN) """
     def __init__(self, name, term_dict):
-        self.name = name
-        self.term_dict = term_dict
+        self._name = name
+        self._term_dict = term_dict
 
-    def project(self, keys):
-        return Term(self.name,
-                {k: v for k, v in self.term_dict.items() if k in keys})
+    def project(self, keys) -> Term:
+        return Term(self._name,
+                {k: v for k, v in self._term_dict.items() if k in keys})
 
-    def hide(self, keys):
-        return Term(self.name,
-                {k: v for k, v in self.term_dict.items() if k not in keys})
+    def hide(self, keys) -> Term:
+        return Term(self._name,
+                {k: v for k, v in self._term_dict.items() if k not in keys})
+
+    def value(self, key, value) -> Term:
+        return Term(self._name, dict(self._term_dict, key=value))
 
     def __str__(self) -> str:
-        arg_str = ','.join(map(str, self.term_dict.values()))
-        return f"{self.name}({arg_str})."
+        arg_str = ','.join(map(str, self._term_dict.values()))
+        return f"{self._name}({arg_str})."
+
+class FunctionResult:
+    def __init__(self, result, terms):
+        self.result = result
+        self.terms = terms
+
+    def constant(self, key, value, vtype='string'):
+        if vtype == 'string':
+            value = pad_string(value)
+        self.terms = [term.value(key, value) for term in self.terms]
+        return self
+
+    def build(self) -> Result:
+        self.result.add_terms(self.terms)
+        return self.result
 
 # TODO: documentation
 class Result:
@@ -29,11 +50,14 @@ class Result:
         self.df = df
         self.terms = []
 
+    def add_terms(self, terms: [Term]) -> None:
+        self.terms.extend(terms)
+
     def predicate(self, name, pred, *args, hidden=[], **kwargs) -> Result:
         """ Fluent builder of n-ary predicates """
         return self.function(name, *args, pred = pred, hidden=hidden, **kwargs)
 
-    def function(self, name, *args, **kwargs) -> Result: 
+    def function(self, name, *args, **kwargs) -> FunctionResult: 
         """ Fluent builder of n-ary functors """
 
         # TODO: move to function definition
@@ -48,6 +72,7 @@ class Result:
         args = list(dict.fromkeys(list(args) + list(k_dict.keys())))
 
         assert all(type(arg) in [str] for arg in args)
+        new_terms = []
 
         for _, row in self.df.iterrows():
             terms = {}
@@ -64,16 +89,17 @@ class Result:
 
                     v_type = k_dict.get(arg, default_type)
                     if v and pd.notna(v) and v_type == 'string':
-                        v = f'\"{v}\"'
+                        v = pad_string(v)
 
                 terms[arg] = v
 
             if pred is None or pred(terms):
                 if allow_empty or (terms and None not in terms.values()):
-                    self.terms.append(Term(name, terms).hide(hidden))
+                    # TODO: make hide and project fluently accessible 
+                    # through FunctionResult
+                    new_terms.append(Term(name, terms).hide(hidden))
 
-
-        return self
+        return FunctionResult(self, new_terms)
 
 
     def format_terms(self):

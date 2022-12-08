@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from ontologies import WikiData
-import csv
+from functools import partial
 
 wikidata_dict = {
     "park": "Q22698",
@@ -58,17 +58,24 @@ def init(filename):
             q = make_query(site_name, site_wikidata_id)
             results = wikidata.query(q)
 
-            results.function("label", "site", "siteLabel", v_dict=v_dict)
+            results.function("label", "site", "siteLabel", v_dict=v_dict) \
+                    .build()
+
             results.function("position", "site", "siteLon", "siteLat",
-                           k_dict={"siteLon": 'float', "siteLat": 'float'},
-                           v_dict=v_dict)
+                    k_dict={"siteLon": 'float', "siteLat": 'float'},
+                    v_dict=v_dict) \
+                            .build()
+
             results.function("trip_advisor", "site", "siteTripAdvisorIdLabel",
-                           k_dict={"siteTripAdvisorIdLabel": 'int'},
-                           v_dict=v_dict)
+                    k_dict={"siteTripAdvisorIdLabel": 'int'},
+                    v_dict=v_dict) \
+                            .build()
+
             results.predicate("wheelchair_friendly", wheelchair_friendly,
                     "site", "siteAccessibilityLabel",
                     hidden=["siteAccessibilityLabel"],
-                    v_dict=v_dict)
+                    v_dict=v_dict) \
+                            .build()
             f_knowledge_base.writelines(results.format_terms())
 
 def main():
