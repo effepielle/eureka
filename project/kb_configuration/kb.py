@@ -58,23 +58,32 @@ def init(filename):
             q = make_query(site_name, site_wikidata_id)
             results = wikidata.query(q)
 
+            # Site label functions
             results.function("label", "site", "siteLabel", v_dict=v_dict) \
                     .build()
 
+            # Site geoposition functions
             results.function("position", "site", "siteLon", "siteLat",
                     k_dict={"siteLon": 'float', "siteLat": 'float'},
                     v_dict=v_dict) \
                             .build()
 
+            # Site tripadvisor id functions
             results.function("trip_advisor", "site", "siteTripAdvisorIdLabel",
                     k_dict={"siteTripAdvisorIdLabel": 'int'},
                     v_dict=v_dict) \
                             .build()
 
+            # Site type function
             results.function("type", "site", v_dict=v_dict) \
                     .constant("site_class", site_name) \
                     .build()
 
+            # Site image function
+            results.function("image", "site", "siteImage", v_dict=v_dict) \
+                    .build()
+
+            # Site wheelchair accessibility predicate
             results.predicate("wheelchair_friendly", wheelchair_friendly,
                     "site", "siteAccessibilityLabel", v_dict=v_dict) \
                             .project("site") \
