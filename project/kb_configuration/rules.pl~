@@ -1,5 +1,10 @@
+
+:- table label/2,position/3,type/2,star/2,image/2,trip_advisor/2.
+
 % query like ?-site_star(Label,Image,Rating) ;
 % site_star(Label,Rating). to retrieve cultural assets without image
+is_type(Label,Category):- label(Id,Label),type(Id,Category).
+
 site_star(Label,Image,Rating):- label(Id,Label), image(Id,Image), star(Id,Rating).
 site_star(Label,Rating):- label(Id,Label), star(Id,Rating).
 
@@ -20,8 +25,6 @@ recommended_cultural_asset(Label, Lat, Lon, Trip_advisor,Image,Rating):- label(I
 recommended_cultural_asset(Label, Lat, Lon,Image,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Image,Rating).
 recommended_cultural_asset(Label, Lat, Lon,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Rating).
 
-recommended_cultural_asset(Label, Lat, Lon,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Rating).
-
 %various filter on result
 filter_by_star(Label,Image,Rating,Threshold):- site_star(Label,Image,Rating), Rating>=Threshold.
 filter_by_star(Label,Rating,Threshold):- site_star(Label,Rating), Rating>=Threshold.
@@ -33,7 +36,7 @@ indoor(Label):-label(Id,Label), (type(Id,"church_building"); type(Id,"museum")).
 
 outdoor(Label,Image):- label(Id,Label), image(Id,Image), (type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
                                                          type(Id,"monument"); type(Id,"square")).
-outdoor(Label):- label(Id,Label), (type(Id,"park"); type(Id,"public garden"); type(Id,"city_walls"); type(Id,"monument"); type(Id,"square")).
+outdoor(Label):- label(Id,Label), (type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls"); type(Id,"monument"); type(Id,"square")).
 
 %if raining
 visitable_if_raining(Label,Image):- indoor(Label,Image).
