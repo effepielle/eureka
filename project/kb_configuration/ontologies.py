@@ -39,6 +39,14 @@ class FunctionResult:
         self.terms = [term.value(key, value) for term in self.terms]
         return self
 
+    def project(self, *keys):
+        self.terms = [term.project(keys) for term in self.terms]
+        return self
+
+    def hide(self, *keys):
+        self.terms = [term.hide(keys) for term in self.terms]
+        return self
+
     def build(self) -> Result:
         self.result.add_terms(self.terms)
         return self.result
@@ -53,9 +61,9 @@ class Result:
     def add_terms(self, terms: [Term]) -> None:
         self.terms.extend(terms)
 
-    def predicate(self, name, pred, *args, hidden=[], **kwargs) -> Result:
+    def predicate(self, name, pred, *args, **kwargs) -> Result:
         """ Fluent builder of n-ary predicates """
-        return self.function(name, *args, pred = pred, hidden=hidden, **kwargs)
+        return self.function(name, *args, pred = pred, **kwargs)
 
     def function(self, name, *args, **kwargs) -> FunctionResult: 
         """ Fluent builder of n-ary functors """
@@ -66,7 +74,6 @@ class Result:
         allow_empty = kwargs.get('allow_empty', False)
         default_type = kwargs.get('default_type', 'string')
         pred = kwargs.get('pred', None)
-        hidden = kwargs.get('hidden', [])
 
         # concatenate keys and remove duplicates while preserving order
         args = list(dict.fromkeys(list(args) + list(k_dict.keys())))
@@ -95,9 +102,7 @@ class Result:
 
             if pred is None or pred(terms):
                 if allow_empty or (terms and None not in terms.values()):
-                    # TODO: make hide and project fluently accessible 
-                    # through FunctionResult
-                    new_terms.append(Term(name, terms).hide(hidden))
+                    new_terms.append(Term(name, terms))
 
         return FunctionResult(self, new_terms)
 

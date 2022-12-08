@@ -54,7 +54,8 @@ def test_predicates(verbose=False):
     results = wikidata.query(q)
     v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
     pred = lambda v: v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
-    results.predicate("wheelchair_friendly", pred, "site", "siteAccessibilityLabel", hidden=["siteAccessibilityLabel"], v_dict=v_dict) \
+    results.predicate("wheelchair_friendly", pred, "site", "siteAccessibilityLabel", v_dict=v_dict) \
+            .project("site") \
             .build()
 
     kb = [str(term) for term in results.terms]

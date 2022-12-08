@@ -76,9 +76,8 @@ def init(filename):
                     .build()
 
             results.predicate("wheelchair_friendly", wheelchair_friendly,
-                    "site", "siteAccessibilityLabel",
-                    hidden=["siteAccessibilityLabel"],
-                    v_dict=v_dict) \
+                    "site", "siteAccessibilityLabel", v_dict=v_dict) \
+                            .project("site") \
                             .build()
             f_knowledge_base.writelines(results.format_terms())
 
