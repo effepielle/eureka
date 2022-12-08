@@ -51,6 +51,7 @@ def wheelchair_friendly(v):
 def init(filename, rules_file=None):
     wikidata = WikiData()
     v_dict = {"site": parse_id}
+    predicates = []
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
         if rules_file:
@@ -97,12 +98,12 @@ def init(filename, rules_file=None):
                             .project("site") \
                             .build()
 
-            f_knowledge_base.writelines(results.format_predicates())
+            predicates.extend(results.format_predicates())
+
+        f_knowledge_base.writelines(sorted(predicates))
 
 def main():
     init('KB_new.pl', rules_file='rules.pl')
-    # Ugly hack to sort facts
-    exec("sort project/kb_configuration/KB_new.pl -u -o project/kb_configuration/KB_new.pl")
 
 if __name__ == '__main__':
     main()
