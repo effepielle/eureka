@@ -1,7 +1,5 @@
 import re
 import random
-import sys
-
 import numpy as np
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -73,6 +71,11 @@ def init(filename):
                     k_dict={"siteTripAdvisorIdLabel": 'int'},
                     v_dict=v_dict) \
                             .build()
+
+            # Site (random) rating functions
+            results.function("star", "site", v_dict=v_dict) \
+                    .closure("stars", partial(random.randrange, 6)) \
+                    .build()
 
             # Site type function
             results.function("type", "site", v_dict=v_dict) \
