@@ -39,14 +39,14 @@ def test_ontologies(verbose=False):
     results.predicate("tuple", "site", "siteLabel", "siteAccessibilityLabel", k_dict=d, v_dict=v_dict) \
             .build()
 
-    kb = [str(term) for term in results.terms]
+    kb = [str(p) for p in results.predicates]
 
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("\"wheelchair accessible\"" in term for term in kb)
+    assert any("\"wheelchair accessible\"" in p for p in kb)
 
 # TODO
 def test_predicate_filters(verbose=False):
@@ -61,13 +61,13 @@ def test_predicate_filters(verbose=False):
             .project("site") \
             .build()
 
-    kb = [str(term) for term in results.terms]
+    kb = [str(p) for p in results.predicates]
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("wheelchair_friendly" in term for term in kb)
+    assert any("wheelchair_friendly" in p for p in kb)
 
 
 def test_predicate_constants(verbose=False):
@@ -81,14 +81,14 @@ def test_predicate_constants(verbose=False):
             .constant("class", "church_building") \
             .build()
 
-    kb = [str(term) for term in results.terms]
+    kb = [str(p) for p in results.predicates]
 
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("\"church_building\"" in term for term in kb)
+    assert any("\"church_building\"" in p for p in kb)
 
 def test_predicate_closures(verbose=False):
     wikidata = WikiData()
@@ -101,15 +101,15 @@ def test_predicate_closures(verbose=False):
             .closure("stars", partial(random.randrange, 6)) \
             .build()
 
-    kb = [str(term) for term in results.terms]
+    kb = [str(p) for p in results.predicates]
 
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("star" in term for term in kb)
-    stars = [term.get("stars") for term in results.terms] 
+    assert any("star" in p for p in kb)
+    stars = [p.get("stars") for p in results.predicates] 
     assert not(stars.count(stars[0]) == len(stars))
 
 
@@ -127,7 +127,7 @@ def test_predicate_duplicates(verbose=False):
             .build()
     ids.update([p.get('site') for p in results.get_predicates()])
     
-    p_count = len(results.terms)
+    p_count = len(results.predicates)
 
     # construct same predicates again, filtering for IDs
     results.predicate("star", "site", v_dict=v_dict) \
@@ -135,33 +135,33 @@ def test_predicate_duplicates(verbose=False):
             .filter(lambda v: v['site'] not in ids) \
             .build()
 
-    kb = [str(term) for term in results.terms]
+    kb = [str(p) for p in results.predicates]
 
     if verbose:
         print('\n'.join(kb))
 
     assert results
     assert kb
-    assert any("star" in term for term in kb)
-    stars = [term.get("stars") for term in results.terms] 
+    assert any("star" in p for p in kb)
+    stars = [p.get("stars") for p in results.predicates] 
     assert not(stars.count(stars[0]) == len(stars))
-    assert (p_count == len(results.terms))
+    assert (p_count == len(results.predicates))
 
-    p_count = len(results.terms)
+    p_count = len(results.predicates)
 
     # construct same predicates again, without filtering for IDs
     results.predicate("star", "site", v_dict=v_dict) \
             .closure("stars", partial(random.randrange, 6)) \
             .build()
 
-    assert (p_count < len(results.terms))
+    assert (p_count < len(results.predicates))
 
 
 
 if __name__ == '__main__':
-    # test_ontologies(verbose=True)
-    # test_predicate_filters(verbose=True)
-    # test_predicate_constants(verbose=True)
-    # test_predicate_closures(verbose=True)
+    test_ontologies(verbose=True)
+    test_predicate_filters(verbose=True)
+    test_predicate_constants(verbose=True)
+    test_predicate_closures(verbose=True)
     test_predicate_duplicates(verbose=True)
     print('Tests passed')
