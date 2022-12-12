@@ -52,6 +52,7 @@ def init(filename, rules_file=None):
     wikidata = WikiData()
     v_dict = {"site": parse_id}
     predicates = set()
+    ids = set()
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
         if rules_file:
@@ -80,6 +81,8 @@ def init(filename, rules_file=None):
             # Site (random) rating predicates
             results.predicate("star", "site", v_dict=v_dict) \
                     .closure("stars", partial(random.randrange, 6)) \
+                    .filter(lambda v: v["site"] not in ids) \
+                    .unique("site") \
                     .build()
 
             # Site type predicates
@@ -98,6 +101,7 @@ def init(filename, rules_file=None):
                             .project("site") \
                             .build()
 
+            ids.update([p.get('site') for p in results.get_predicates()])
             predicates.update(results.format_predicates())
 
         f_knowledge_base.writelines(sorted(predicates))

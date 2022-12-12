@@ -113,10 +113,55 @@ def test_predicate_closures(verbose=False):
     assert not(stars.count(stars[0]) == len(stars))
 
 
+def test_predicate_duplicates(verbose=False):
+
+    wikidata = WikiData()
+    q = compute_query("church_building", "Q16970")
+    ids = set()
+
+    results = wikidata.query(q)
+    v_dict = {"site": lambda v: v.split('http://www.wikidata.org/entity/')[1]}
+
+    results.predicate("star", "site", v_dict=v_dict) \
+            .closure("stars", partial(random.randrange, 6)) \
+            .build()
+    ids.update([p.get('site') for p in results.get_predicates()])
+    
+    p_count = len(results.terms)
+
+    # construct same predicates again, filtering for IDs
+    results.predicate("star", "site", v_dict=v_dict) \
+            .closure("stars", partial(random.randrange, 6)) \
+            .filter(lambda v: v['site'] not in ids) \
+            .build()
+
+    kb = [str(term) for term in results.terms]
+
+    if verbose:
+        print('\n'.join(kb))
+
+    assert results
+    assert kb
+    assert any("star" in term for term in kb)
+    stars = [term.get("stars") for term in results.terms] 
+    assert not(stars.count(stars[0]) == len(stars))
+    assert (p_count == len(results.terms))
+
+    p_count = len(results.terms)
+
+    # construct same predicates again, without filtering for IDs
+    results.predicate("star", "site", v_dict=v_dict) \
+            .closure("stars", partial(random.randrange, 6)) \
+            .build()
+
+    assert (p_count < len(results.terms))
+
+
 
 if __name__ == '__main__':
-    test_ontologies(verbose=True)
-    test_predicate_filters(verbose=True)
-    test_predicate_constants(verbose=True)
-    test_predicate_closures(verbose=True)
+    # test_ontologies(verbose=True)
+    # test_predicate_filters(verbose=True)
+    # test_predicate_constants(verbose=True)
+    # test_predicate_closures(verbose=True)
+    test_predicate_duplicates(verbose=True)
     print('Tests passed')

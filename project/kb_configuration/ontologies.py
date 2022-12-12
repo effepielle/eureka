@@ -7,6 +7,7 @@ def pad_string(s, pad='"'):
     return f"{pad}{s}{pad}"
 
 # TODO: documentation
+# TODO: rename to Predicate
 class Term:
     """ Immutable N-ary compound term: functor_name(v1, v2, ..., vN) """
     def __init__(self, name, term_dict):
@@ -35,6 +36,10 @@ class Term:
     def get_dict(self) -> dict:
         return self._term_dict.copy()
 
+    @property
+    def name(self) -> str:
+        return self._name
+
     def __str__(self) -> str:
         arg_str = ','.join(map(str, self._term_dict.values()))
         return f"{self._name}({arg_str})."
@@ -56,6 +61,12 @@ class PredicateResult:
     def filter(self, f) -> PredicateResult:
         assert callable(f)
         self.terms = [term for term in self.terms if f(term.get_dict())]
+        return self
+
+    def unique(self, key) -> PredicateResult:
+        """ Retain the last inserted duplicate predicate, filtered on a key """
+        d = {term.get(key): term for term in self.terms}
+        self.terms = list(d.values())
         return self
 
     def project(self, *keys) -> PredicateResult:
@@ -118,6 +129,11 @@ class Result:
                 new_terms.append(Term(name, terms))
 
         return PredicateResult(self, new_terms)
+
+    def get_predicates(self, name=None):
+        if name:
+            return [term for term in self.terms if term.name == name]
+        return self.terms
 
 
     def format_predicates(self):
