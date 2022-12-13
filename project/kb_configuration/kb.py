@@ -70,6 +70,7 @@ def init(filename, rules_file=None):
             results.predicate("position", "site", "siteLon", "siteLat",
                     k_dict={"siteLon": 'float', "siteLat": 'float'},
                     v_dict=v_dict) \
+                            .unique("site") \
                             .build()
 
             # Site tripadvisor id predicates
