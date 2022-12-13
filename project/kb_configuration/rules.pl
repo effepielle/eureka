@@ -1,5 +1,10 @@
+%use table to store same facts repeated
+% if infinite loop, uncomment (dynamic program like fix)  :- table label/2,position/3,type/2,star/2,image/2,trip_advisor/2.
+
 % query like ?-site_star(Label,Image,Rating) ;
 % site_star(Label,Rating). to retrieve cultural assets without image
+is_type(Label,Category):- label(Id,Label),type(Id,Category).
+
 site_star(Label,Image,Rating):- label(Id,Label), image(Id,Image), star(Id,Rating).
 site_star(Label,Rating):- label(Id,Label), star(Id,Rating).
 
@@ -18,8 +23,6 @@ is_wheelchair_unfriendly(Label) :- label(Id,Label), \+wheelchair_friendly(Id).
 recommended_cultural_asset(Label, Lat, Lon, Trip_advisor,Image,Rating):- label(Id,Label), position(Id, Lat, Lon), trip_advisor(Id,Trip_advisor),
                                                                    site_star(Label,Image,Rating).
 recommended_cultural_asset(Label, Lat, Lon,Image,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Image,Rating).
-recommended_cultural_asset(Label, Lat, Lon,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Rating).
-
 recommended_cultural_asset(Label, Lat, Lon,Rating):- label(Id,Label), position(Id, Lat, Lon), site_star(Label,Rating).
 
 %various filter on result
