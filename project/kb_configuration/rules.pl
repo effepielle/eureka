@@ -1,5 +1,5 @@
 %use table to store same facts repeated
-:- table label/2,position/3,type/2,star/2,image/2,trip_advisor/2.
+% if infinite loop, uncomment (dynamic program like fix)  :- table label/2,position/3,type/2,star/2,image/2,trip_advisor/2.
 
 % query like ?-site_star(Label,Image,Rating) ;
 % site_star(Label,Rating). to retrieve cultural assets without image
