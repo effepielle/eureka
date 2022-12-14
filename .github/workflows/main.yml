@@ -29,6 +29,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: KB
-          path: project/kb_configuration/KB_new.pl
+          path: |
+            project/kb_configuration/KB_new.pl
+            project/kb_configuration/rules.pl
 
 
