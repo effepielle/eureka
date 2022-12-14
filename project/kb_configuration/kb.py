@@ -1,10 +1,6 @@
-import re
 import random
-import numpy as np
-import pandas as pd
-from SPARQLWrapper import SPARQLWrapper, JSON
-from ontologies import WikiData
 from functools import partial
+from ontologies import WikiData
 
 wikidata_dict = {
     "park": "Q22698",
