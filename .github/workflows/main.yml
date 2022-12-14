@@ -1,0 +1,49 @@
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install requirements
+        run: pip install -r requirements.txt 
+      - name: Run ontology tests
+        run: python3 project/kb_configuration/test_ontologies.py
+
+  init-kb:
+    runs-on: ubuntu-latest
+    name: Initialize KB
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install requirements
+        run: pip install -r requirements.txt 
+      - name: Initialize Knowledge Base
+        run: python3 project/kb_configuration/kb.py
+      - name: Archive KB artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: KB
+          path: |
+            project/kb_configuration/KB_new.pl
+            project/kb_configuration/rules.pl
+
+
