@@ -17,8 +17,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
       - name: Install requirements
-        run: pip install --upgrade pip && pip install -r requirements.txt 
+        run: pip install -r requirements.txt 
       - name: Initialize Knowledge Base
         run: python3 project/kb_configuration/kb.py
       - name: Archive KB artifact
