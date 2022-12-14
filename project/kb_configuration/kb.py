@@ -14,8 +14,14 @@ wikidata_dict = {
     "square": "Q174782",
     "cultural_event": "Q58687420",
     "museum":"Q33506",
-    "monument":"Q4989906"
-    #TODO Marco and Giacomo: add more items
+    "monument":"Q4989906",
+    "library": "Q7075",
+    "tower": "Q12518",
+    "city_gate": "Q82117",
+    "bridge": "Q12280",
+    "palace": "Q16560",
+    "cemetery": "Q39614",
+    "theater": "Q24354"
 }
 
 def make_query(wikidata_id):
