@@ -61,13 +61,13 @@ indoor(Label):-
 outdoor(Label,Image):-
     label(Id,Label), image(Id,Image), (
         type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
-        type(Id,"monument"); type("tower"); type(Id, "city_gate");
-        type(Id, "bridge"); type("cemetery"); type(Id,"square")).
+        type(Id,"monument"); type(Id, "tower"); type(Id, "city_gate");
+        type(Id, "bridge"); type(Id, "cemetery"); type(Id,"square")).
 outdoor(Label):-
     label(Id,Label), (
         type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
-        type(Id,"monument"); type("tower"); type(Id, "city_gate");
-        type(Id, "bridge"); type("cemetery"); type(Id,"square")).
+        type(Id,"monument"); type(Id, "tower"); type(Id, "city_gate");
+        type(Id, "bridge"); type(Id, "cemetery"); type(Id,"square")).
 
 
 %if raining
