@@ -21,7 +21,8 @@ wikidata_dict = {
     "bridge": "Q12280",
     "palace": "Q16560",
     "cemetery": "Q39614",
-    "theater": "Q24354"
+    "theater": "Q24354",
+    "arts_venue": "Q15090615"
 }
 
 def make_query(wikidata_id):
