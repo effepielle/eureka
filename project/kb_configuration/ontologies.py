@@ -1,6 +1,6 @@
 from __future__ import annotations
-import numpy as np
 import pandas as pd
+from json import dumps
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 def pad_string(s, pad='"'):
@@ -24,7 +24,7 @@ class Predicate:
 
     def value(self, key, value) -> Predicate:
         if type(value) is str:
-            value = pad_string(value)
+            value = dumps(value)
 
         new_dict = self._p_dict.copy()
         new_dict[key] = value
@@ -121,7 +121,7 @@ class Result:
 
                     v_type = k_dict.get(arg, default_type)
                     if pd.notna(v) and v_type == 'string':
-                        v = pad_string(v)
+                        v = dumps(v)
 
                 predicates[arg] = v
 
