@@ -1,0 +1,29 @@
+name: CI
+
+# Controls when the action will run. 
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+        
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# on: [push]
+
+jobs:
+  init-kb:
+    runs-on: ubuntu-latest
+    name: Initialize KB
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install requirements
+        run: pip install --upgrade pip && pip install -r requirements.txt 
+      - name: Initialize Knowledge Base
+        uses: actions/upload-artifact@v3
+        with:
+          name: KB
+          path: project/kb_configuration/KB_new.pl
+        run: python3 project/kb_configuration/kb.py
+
+
