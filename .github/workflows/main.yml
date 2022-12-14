@@ -20,10 +20,11 @@ jobs:
       - name: Install requirements
         run: pip install --upgrade pip && pip install -r requirements.txt 
       - name: Initialize Knowledge Base
+        run: python3 project/kb_configuration/kb.py
+      - name: Archive KB artifact
         uses: actions/upload-artifact@v3
         with:
           name: KB
           path: project/kb_configuration/KB_new.pl
-        run: python3 project/kb_configuration/kb.py
 
 
