@@ -158,6 +158,14 @@ class WikiData:
 # TODO
 class DatiCultura:
     """ dati.cultura.gov.it interface """
-    def __init__(self):
-        pass
+    def __init__(self, format=JSON):
+        user_agent = 'DatiCultura SPARQL interface'
+        self.sparql = SPARQLWrapper('https://dati.cultura.gov.it/sparql', agent=user_agent)
 
+    def query(self, q) -> Result:
+        self.sparql.setQuery(q)
+        self.sparql.setReturnFormat(JSON)
+        results = self.sparql.query().convert()
+        results_df = pd.json_normalize(results['results']['bindings'])
+
+        return Result(results_df)
