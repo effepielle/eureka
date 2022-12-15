@@ -1,6 +1,6 @@
 import random
 from functools import partial
-from ontologies import WikiData
+from ontologies import WikiData, DatiCultura
 
 wikidata_dict = {
     "park": "Q22698",
@@ -21,7 +21,7 @@ wikidata_dict = {
     "arts_venue": "Q15090615"
 }
 
-def make_query(wikidata_id):
+def wikidata_make_query(wikidata_id):
     return """
     SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
     {
@@ -45,15 +45,45 @@ def make_query(wikidata_id):
     }
     """
 
+def daticultura_make_query():
+    return """
+    prefix city: <http://dati.beniculturali.it/mibact/luoghi/resource/City/>
+    SELECT DISTINCT
+    (?Id as ?Wikidata_id)
+    ?Orari_di_apertura 
+    (str(?Biglietti) as ?costo_biglietti)
+
+    WHERE {
+        ?Risorsa  a cis:CulturalInstituteOrSite.
+        MINUS
+        {?Risorsa  a cis:CultResearchCenter.}
+        ?Risorsa  cis:institutionalCISName ?Nome_Istituzionale; 
+            cis:hasSite/cis:siteAddress/clvapit:hasCity city:Pisa.
+        optional {?Risorsa  accessCondition:hasAccessCondition [a accessCondition:OpeningHoursSpecification ;
+                                                        l0:description ?Orari_di_apertura ]. }
+        optional {
+        ?Risorsa potapit:hasTicket ?ticket .
+        ?offer potapit:includes ?ticket ;
+                potapit:hasPriceSpecification [potapit:hasCurrencyValue ?Biglietti]. }
+    ?Risorsa owl:sameAs ?Id.
+    FILTER regex(?Id, "^http://www.wikidata.org/entity/")
+        }
+    """
+
 def parse_id(string):
     return string.split('http://www.wikidata.org/entity/')[1]
 
 def wheelchair_friendly(v):
     return v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
 
+def is_free(v):
+    return v['costo_biglietti'] == "\"Gratuito\""
+
+
 def init(filename, rules_file=None):
     wikidata = WikiData()
-    v_dict = {"site": parse_id}
+    daticultura = DatiCultura()
+    v_dict = {"site": parse_id, "Wikidata_id": parse_id}
     predicates = set()
     ids = set()
 
@@ -62,7 +92,7 @@ def init(filename, rules_file=None):
             f_knowledge_base.write(f":-include(\"{rules_file}\").\n\n")
 
         for site_name, site_wikidata_id in wikidata_dict.items():
-            q = make_query(site_wikidata_id)
+            q = wikidata_make_query(site_wikidata_id)
             results = wikidata.query(q)
 
             # Site label predicates
@@ -107,6 +137,16 @@ def init(filename, rules_file=None):
 
             ids.update([p.get('site') for p in results.get_predicates()])
             predicates.update(results.format_predicates())
+
+        q = daticultura_make_query()
+        results = daticultura.query(q)
+
+        results.predicate("pricing_information", "Wikidata_id", "costo_biglietti",
+                v_dict=v_dict) \
+                .project("Wikidata_id", "costo_biglietti") \
+                .build()
+
+        predicates.update(results.format_predicates())
 
         f_knowledge_base.writelines(sorted(predicates))
 
