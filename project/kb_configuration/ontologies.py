@@ -7,7 +7,6 @@ def pad_string(s, pad='"'):
     return f"{pad}{s}{pad}"
 
 # TODO: documentation
-# TODO: rename to Predicate
 class Predicate:
     """ Immutable N-ary compound predicate: functor_name(v1, v2, ..., vN) """
     def __init__(self, name, p_dict):
@@ -56,6 +55,11 @@ class PredicateResult:
     def closure(self, key, f) -> PredicateResult:
         assert callable(f)
         self.ps = [p.value(key, f()) for p in self.ps]
+        return self
+
+    def map(self, key, f) -> PredicateResult:
+        assert callable(f)
+        self.ps = [p.value(key, f(p.get(key))) for p in self.ps]
         return self
 
     def filter(self, f) -> PredicateResult:
