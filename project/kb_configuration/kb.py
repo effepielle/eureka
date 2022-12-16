@@ -95,7 +95,7 @@ def recover_opening_time(day, v, index=-1):
     def recover_undefined(string):
         return None
 
-    tmp = v.lower().replace(".", ":")
+    tmp = v.lower().replace(":", ".")
     if day == "lun":
         return recover_day_opening_time(tmp, " (", index)
     elif day == "mar":
@@ -129,7 +129,7 @@ def recover_closing_time(day, v, index=-1):
     def recover_undefined(string):
         return None
 
-    tmp = v.lower().replace(".", ":").replace('"', "")
+    tmp = v.lower().replace(":", ".").replace('"', "")
     if day == "lun":
         return recover_day_closing_time(tmp, " (", index)
     elif day == "mar":
@@ -192,7 +192,7 @@ def init(filename, rules_file=None):
 
             # site (random) rating predicates
             results.predicate("star", "site", v_dict=v_dict) \
-                    .closure("stars", partial(random.randrange, 6)) \
+                    .closure("stars", partial(random.randrange, 1, 6)) \
                     .filter(lambda v: v["site"] not in ids) \
                     .unique("site") \
                     .build()
@@ -232,7 +232,9 @@ def init(filename, rules_file=None):
                         .filter(valid_timetable_entry) \
                         .compute("Orari_di_apertura", "day", lambda v: translation if day in v.lower() else None) \
                         .compute("Orari_di_apertura", "opening_time", lambda v: recover_opening_time(day, v, 0)) \
+                        .map("opening_time", lambda v: float(v.strip("0").replace('"', ""))) \
                         .compute("Orari_di_apertura", "closing_time", lambda v: recover_closing_time(day, v, 0)) \
+                        .map("closing_time", lambda v: float(v.strip("0").replace('"', ""))) \
                         .project("Wikidata_id", "day", "opening_time", "closing_time") \
                         .build()
             results.predicate("timetable_info", "Wikidata_id", "Orari_di_apertura",
@@ -240,7 +242,9 @@ def init(filename, rules_file=None):
                         .filter(valid_timetable_entry) \
                         .compute("Orari_di_apertura", "day", lambda v: translation if day in v.lower() else None) \
                         .compute("Orari_di_apertura", "opening_time", lambda v: recover_opening_time(day, v, 1)) \
+                        .map("opening_time", lambda v: float(v.strip("0").replace('"', ""))) \
                         .compute("Orari_di_apertura", "closing_time", lambda v: recover_closing_time(day, v, 1)) \
+                        .map("closing_time", lambda v: float(v.strip("0").replace('"', ""))) \
                         .project("Wikidata_id", "day", "opening_time", "closing_time") \
                         .build()
 
