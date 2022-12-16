@@ -80,6 +80,149 @@ def wheelchair_friendly(v):
 def valid_timetable_entry(v):
     return "(" in v['Orari_di_apertura'] and ")" in v["Orari_di_apertura"]
 
+def recover_opening_time(day, v):
+    def recover_monday_opening_time(string):
+        s = string.split(" (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_tuesday_opening_time(string):
+        s = string.split("martedi (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_wednesday_opening_time(string):
+        s = string.split("mercoledi (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_thursday_opening_time(string):
+        s = string.split("giovedi (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_friday_opening_time(string):
+        s = string.split("venerdi (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_saturday_opening_time(string):
+        s = string.split("sabato (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_sunday_opening_time(string):
+        s = string.split("domenica (")[1].split("|")[0]
+        if "/" not in s:
+            return f'{s.split(",")[0]}'
+        else:
+            return f'{s.split("/")[0]} {s.split(",")[1].split("/")[0]}'
+
+    def recover_undefined(string):
+        return None
+
+    tmp = v.lower().replace(".", ":")
+    if day == "lun":
+        return recover_monday_opening_time(tmp)
+    elif day == "mar":
+        return recover_tuesday_opening_time(tmp)
+    elif day == "mer":
+        return recover_wednesday_opening_time(tmp)
+    elif day == "gio":
+        return recover_thursday_opening_time(tmp)
+    elif day == "ven":
+        return recover_friday_opening_time(tmp)
+    elif day == "sab":
+        return recover_saturday_opening_time(tmp)
+    elif day == "dom":
+        return recover_sunday_opening_time(tmp)
+    else:
+        return recover_undefined(tmp)
+
+
+def recover_closing_time(day, v):
+    def recover_monday_closing_time(string):
+        s = string.split(" (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_tuesday_closing_time(string):
+        s = string.split("martedi (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_wednesday_closing_time(string):
+        s = string.split("mercoledi (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_thursday_closing_time(string):
+        s = string.split("giovedi (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_friday_closing_time(string):
+        s = string.split("venerdi (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_saturday_closing_time(string):
+        s = string.split("sabato (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_sunday_closing_time(string):
+        s = string.split("domenica (")[1].split("|")[0].replace(")", "")
+        if "/" not in s:
+            return f'{s.split(",")[1]}'
+        else:
+            return f'{s.split("/")[1].split(",")[0]} {s.split(",")[1].split("/")[1]}'
+
+    def recover_undefined(string):
+        return None
+
+    tmp = v.lower().replace(".", ":").replace('"', "")
+    if day == "lun":
+        return recover_monday_closing_time(tmp)
+    elif day == "mar":
+        return recover_tuesday_closing_time(tmp)
+    elif day == "mer":
+        return recover_wednesday_closing_time(tmp)
+    elif day == "gio":
+        return recover_thursday_closing_time(tmp)
+    elif day == "ven":
+        return recover_friday_closing_time(tmp)
+    elif day == "sab":
+        return recover_saturday_closing_time(tmp)
+    elif day == "dom":
+        return recover_sunday_closing_time(tmp)
+    else:
+        return recover_undefined(tmp)
+
 
 def init(filename, rules_file=None):
     wikidata = WikiData()
@@ -87,6 +230,15 @@ def init(filename, rules_file=None):
     v_dict = {"site": parse_id, "Wikidata_id": parse_id}
     predicates = set()
     ids = set()
+    days_dict = {
+        "lun": "monday",
+        "mar": "tuesday",
+        "mer": "wednesday",
+        "gio": "thursday",
+        "ven": "friday",
+        "sab": "saturday",
+        "dom": "sunday"
+    }
     setlocale(LC_NUMERIC, '')
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
@@ -149,6 +301,16 @@ def init(filename, rules_file=None):
                     .map("costo_biglietti", lambda v: float(0) if "Gratuito" in v else atof(v.replace('"', ""))) \
                     .project("Wikidata_id", "costo_biglietti") \
                     .build()
+
+        for day, translation in days_dict.items():
+            results.predicate("timetable_info", "Wikidata_id", "Orari_di_apertura",
+                    v_dict=v_dict) \
+                        .filter(valid_timetable_entry) \
+                        .compute("Orari_di_apertura", "day", lambda v: translation if day in v.lower() else None) \
+                        .compute("Orari_di_apertura", "opening_time", lambda v: recover_opening_time(day, v)) \
+                        .compute("Orari_di_apertura", "closing_time", lambda v: recover_closing_time(day, v)) \
+                        .project("Wikidata_id", "day", "opening_time", "closing_time") \
+                        .build()
 
         predicates.update(results.format_predicates())
 
