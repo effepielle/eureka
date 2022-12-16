@@ -1,6 +1,6 @@
 from __future__ import annotations
-import pandas as pd
 from json import dumps
+import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 def pad_string(s, pad='"'):
@@ -55,6 +55,11 @@ class PredicateResult:
     def closure(self, key, f) -> PredicateResult:
         assert callable(f)
         self.ps = [p.value(key, f()) for p in self.ps]
+        return self
+
+    def compute(self, key, field, f) -> PredicateResult:
+        assert callable(f)
+        self.ps = [p.value(field, f(p.get(key))) for p in self.ps if pd.notna(f(p.get(key)))]
         return self
 
     def map(self, key, f) -> PredicateResult:
