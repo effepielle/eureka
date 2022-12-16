@@ -1,5 +1,6 @@
 import random
 from functools import partial
+from locale import atof, setlocale, LC_NUMERIC
 from ontologies import WikiData, DatiCultura
 
 wikidata_dict = {
@@ -76,8 +77,8 @@ def parse_id(string):
 def wheelchair_friendly(v):
     return v['siteAccessibilityLabel'] == "\"wheelchair accessible\""
 
-def is_free(v):
-    return v['costo_biglietti'] == "\"Gratuito\""
+def valid_timetable_entry(v):
+    return "(" in v['Orari_di_apertura'] and ")" in v["Orari_di_apertura"]
 
 
 def init(filename, rules_file=None):
@@ -86,6 +87,7 @@ def init(filename, rules_file=None):
     v_dict = {"site": parse_id, "Wikidata_id": parse_id}
     predicates = set()
     ids = set()
+    setlocale(LC_NUMERIC, '')
 
     with open(filename, 'w+', encoding='utf8') as f_knowledge_base:
         if rules_file:
@@ -141,10 +143,12 @@ def init(filename, rules_file=None):
         q = daticultura_make_query()
         results = daticultura.query(q)
 
-        results.predicate("pricing_information", "Wikidata_id", "costo_biglietti",
+        # Ticket cost predicates
+        results.predicate("ticket_cost", "Wikidata_id", "costo_biglietti",
                 v_dict=v_dict) \
-                .project("Wikidata_id", "costo_biglietti") \
-                .build()
+                    .map("costo_biglietti", lambda v: float(0) if "Gratuito" in v else atof(v.replace('"', ""))) \
+                    .project("Wikidata_id", "costo_biglietti") \
+                    .build()
 
         predicates.update(results.format_predicates())
 
