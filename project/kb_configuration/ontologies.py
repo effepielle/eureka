@@ -2,6 +2,7 @@ from __future__ import annotations
 from json import dumps
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
+from typing import Any, List
 
 def pad_string(s, pad='"'):
     return f"{pad}{s}{pad}"
@@ -97,7 +98,7 @@ class Result:
         self.df = df
         self.predicates = []
 
-    def add_predicates(self, predicates: [Predicate]) -> None:
+    def add_predicates(self, predicates: List[Predicate]) -> None:
         self.predicates.extend(predicates)
 
     def predicate(self, name, *args, **kwargs) -> PredicateResult: 
