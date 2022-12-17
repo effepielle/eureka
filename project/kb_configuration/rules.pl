@@ -4,21 +4,31 @@
 % query like ?-site_star(Label,Image,Rating) ;
 % site_star(Label,Rating). to retrieve cultural assets without image
 
+%utilities
 is_type(Label,Category):-
     label(Id,Label),type(Id,Category).
 
+site_label(Label):-
+    label(_,Label).
+
+site_image(Label, Image):-
+    label(Id, Label), image(Id, Image).
+
+site_position(Label, Lat, Lon):-
+    label(Id, Label), position(Id, Lat, Lon).
+
+site_tripadvisor(Label, TripID):-
+    label(Id, Label), trip_advisor(Id, TripID).
 
 site_star(Label,Image,Rating):-
     label(Id,Label), image(Id,Image), star(Id,Rating).
 site_star(Label,Rating):-
     label(Id,Label), star(Id,Rating).
 
-
 is_wheelchair_friendly(Label,Image):-
     label(Id,Label), image(Id,Image), wheelchair_friendly(Id).
 is_wheelchair_friendly(Label):-
     label(Id,Label), wheelchair_friendly(Id).
-
 
 is_wheelchair_unfriendly(Label,Image):-
     label(Id,Label), image(Id,Image), \+wheelchair_friendly(Id).
@@ -35,18 +45,46 @@ site_timetable(Label,Image, Day, Opening, Closing) :-
 site_timetable(Label,Day,Opening,Closing) :- 
     label(Id,Label), timetable_info(Id,Day,Opening, Closing).
 
+
 %composing the type of result
 % do an and query with is_wheelchair_friendly or
 % is_wheelchair_unfriendly if you want to know also the accessibility
 %info
 % missing trip_advisor
-recommended_cultural_asset(Label, Lat, Lon, Trip_advisor,Image,Rating):-
-    label(Id,Label), position(Id, Lat, Lon), trip_advisor(Id,Trip_advisor),
-    site_star(Label,Image,Rating).
-recommended_cultural_asset(Label, Lat, Lon,Image,Rating):-
-    label(Id,Label), position(Id, Lat, Lon), site_star(Label,Image,Rating).
-recommended_cultural_asset(Label, Lat, Lon,Rating):-
-    label(Id,Label), position(Id, Lat, Lon), site_star(Label,Rating).
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, TripID, Day, Opening, Closing, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_timetable(Label, Image, Day, Opening, Closing), site_cost(Label, Image, Cost).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, TripID, Day, Opening, Closing):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_timetable(Label, Image, Day, Opening, Closing).
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, Day, Opening, Closing, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_timetable(Label, Image, Day, Opening, Closing), site_cost(Label, Image, Cost).
+recommended_cultural_asset(Label, Lat, Lon, Rating, TripID, Day, Opening, Closing, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_timetable(Label, Day, Opening, Closing), site_cost(Label, Cost).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, Day, Opening, Closing):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_timetable(Label, Image, Day, Opening, Closing).
+recommended_cultural_asset(Label, Lat, Lon, Rating, TripID, Day, Opening, Closing):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_timetable(Label, Day, Opening, Closing).
+recommended_cultural_asset(Label, Lat, Lon, Rating, Day, Opening, Closing, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_timetable(Label, Day, Opening, Closing), site_cost(Label,Cost).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, TripID, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_cost(Label, Image, Cost).
+recommended_cultural_asset(Label, Lat, Lon, Rating, Day, Opening, Closing):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_timetable(Label, Day, Opening, Closing).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating, Image, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_cost(Label, Image, Cost).
+recommended_cultural_asset(Label, Lat, Lon, Rating, TripID, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_tripadvisor(Label, TripID), site_cost(Label, Cost).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating, Cost):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating), site_cost(Label, Cost).
+recommended_cultural_asset(Label, Lat, Lon, Image, Rating):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Image, Rating).
+
+recommended_cultural_asset(Label, Lat, Lon, Rating):-
+    site_label(Label), site_position(Label, Lat, Lon), site_star(Label, Rating).
 
 
 %various filter on result
@@ -73,25 +111,25 @@ filter_by_timetable(Label, Day, Opening, Closing, Time) :-
 
 %if indoor or outdoor
 indoor(Label,Image):-
-    label(Id,Label), image(Id,Image), (
-        type(Id,"church_building"); type(Id, "library"); type(Id, "palace");
-        type(Id, "theater"); type(Id, "arts_venue"); type(Id,"museum")).
+    site_label(Label), site_image(Label, Image), (
+        is_type(Label,"church_building"); is_type(Label, "library"); is_type(Label, "palace");
+        is_type(Label, "theater"); is_type(Label, "arts_venue"); is_type(Label,"museum")).
 indoor(Label):-
-    label(Id,Label), (
-        type(Id,"church_building"); type(Id, "library"); type(Id, "palace");
-        type(Id, "theater"); type(Id, "arts_venue"); type(Id,"museum")).
+    site_label(Label), (
+        is_type(Label,"church_building"); is_type(Label, "library"); is_type(Label, "palace");
+        is_type(Label, "theater"); is_type(Label, "arts_venue"); is_type(Label,"museum")).
 
 
 outdoor(Label,Image):-
-    label(Id,Label), image(Id,Image), (
-        type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
-        type(Id,"monument"); type(Id, "tower"); type(Id, "city_gate");
-        type(Id, "bridge"); type(Id, "cemetery"); type(Id,"square")).
+    site_label(Label), site_image(Label, Image), (
+        is_type(Label,"park"); is_type(Label,"public_garden"); is_type(Label,"city_walls");
+        is_type(Label,"monument"); is_type(Label, "tower"); is_type(Label, "city_gate");
+        is_type(Label, "bridge"); is_type(Label, "cemetery"); is_type(Label,"square")).
 outdoor(Label):-
-    label(Id,Label), (
-        type(Id,"park"); type(Id,"public_garden"); type(Id,"city_walls");
-        type(Id,"monument"); type(Id, "tower"); type(Id, "city_gate");
-        type(Id, "bridge"); type(Id, "cemetery"); type(Id,"square")).
+    site_label(Label), (
+        is_type(Label,"park"); is_type(Label,"public_garden"); is_type(Label,"city_walls");
+        is_type(Label,"monument"); is_type(Label, "tower"); is_type(Label, "city_gate");
+        is_type(Label, "bridge"); is_type(Label, "cemetery"); is_type(Label,"square")).
 
 
 %if raining
