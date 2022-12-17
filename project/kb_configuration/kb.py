@@ -253,7 +253,7 @@ def init(filename, rules_file=None):
         f_knowledge_base.writelines(sorted(predicates))
 
 def main():
-    init('KB_new.pl', rules_file='rules.pl')
+    init('KB.pl', rules_file='rules.pl')
 
 if __name__ == '__main__':
     main()

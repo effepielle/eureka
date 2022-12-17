@@ -25,6 +25,15 @@ is_wheelchair_unfriendly(Label,Image):-
 is_wheelchair_unfriendly(Label):-
     label(Id,Label), \+wheelchair_friendly(Id).
 
+site_cost(Label,Image,Cost) :- 
+    label(Id,Label), image(Id,Image), ticket_cost(Id,Cost).
+site_cost(Label,Cost) :- 
+    label(Id,Label), ticket_cost(Id,Cost).
+
+site_timetable(Label,Image, Day, Opening, Closing) :- 
+    label(Id,Label), image(Id,Image), timetable_info(Id,Day,Opening, Closing).
+site_timetable(Label,Day,Opening,Closing) :- 
+    label(Id,Label), timetable_info(Id,Day,Opening, Closing).
 
 %composing the type of result
 % do an and query with is_wheelchair_friendly or
@@ -45,6 +54,21 @@ filter_by_star(Label,Image,Rating,Threshold):-
     site_star(Label,Image,Rating), Rating>=Threshold.
 filter_by_star(Label,Rating,Threshold):-
     site_star(Label,Rating), Rating>=Threshold.
+
+filter_by_cost(Label, Image, Cost, Threshold) :-
+    site_cost(Label, Image, Cost), Cost>=Threshold.
+filter_by_cost(Label, Cost, Threshold) :-
+    site_cost(Label, Cost), Cost>=Threshold.
+
+free_entry(Label, Image, Cost) :-
+    site_cost(Label, Image, Cost), Cost=0.0.
+free_entry(Label, Cost) :-
+    site_cost(Label, Cost), Cost=0.0.
+
+filter_by_timetable(Label, Image, Day, Opening, Closing, Time) :-
+    site_timetable(Label,Image,Day,Opening,Closing), Time>=Opening, Time=<Closing.
+filter_by_timetable(Label, Day, Opening, Closing, Time) :-
+    site_timetable(Label,Day,Opening,Closing), Time>=Opening, Time=<Closing.
 
 
 %if indoor or outdoor
@@ -81,10 +105,3 @@ visitable_if_good_weather(Label,Image):-
     outdoor(Label, Image); indoor(Label, Image).
 visitable_if_good_weather(Label):-
     outdoor(Label); indoor(Label).
-
-
-%work in progress..
-%partition by first categories: art_and_culture, architecture, green_areas, it's worth?
-%filter_by_cost
-%free_entrance
-%filter_by_timetable
