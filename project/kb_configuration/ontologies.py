@@ -1,13 +1,13 @@
 from __future__ import annotations
-import pandas as pd
 from json import dumps
+import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
+from typing import Any, List
 
 def pad_string(s, pad='"'):
     return f"{pad}{s}{pad}"
 
 # TODO: documentation
-# TODO: rename to Predicate
 class Predicate:
     """ Immutable N-ary compound predicate: functor_name(v1, v2, ..., vN) """
     def __init__(self, name, p_dict):
@@ -58,6 +58,16 @@ class PredicateResult:
         self.ps = [p.value(key, f()) for p in self.ps]
         return self
 
+    def compute(self, key, field, f) -> PredicateResult:
+        assert callable(f)
+        self.ps = [p.value(field, f(p.get(key))) for p in self.ps if pd.notna(f(p.get(key)))]
+        return self
+
+    def map(self, key, f) -> PredicateResult:
+        assert callable(f)
+        self.ps = [p.value(key, f(p.get(key))) for p in self.ps]
+        return self
+
     def filter(self, f) -> PredicateResult:
         assert callable(f)
         self.ps = [p for p in self.ps if f(p.get_dict())]
@@ -88,7 +98,7 @@ class Result:
         self.df = df
         self.predicates = []
 
-    def add_predicates(self, predicates: [Predicate]) -> None:
+    def add_predicates(self, predicates: List[Predicate]) -> None:
         self.predicates.extend(predicates)
 
     def predicate(self, name, *args, **kwargs) -> PredicateResult: 
@@ -158,6 +168,14 @@ class WikiData:
 # TODO
 class DatiCultura:
     """ dati.cultura.gov.it interface """
-    def __init__(self):
-        pass
+    def __init__(self, format=JSON):
+        user_agent = 'DatiCultura SPARQL interface'
+        self.sparql = SPARQLWrapper('https://dati.cultura.gov.it/sparql', agent=user_agent)
 
+    def query(self, q) -> Result:
+        self.sparql.setQuery(q)
+        self.sparql.setReturnFormat(JSON)
+        results = self.sparql.query().convert()
+        results_df = pd.json_normalize(results['results']['bindings'])
+
+        return Result(results_df)
