@@ -54,7 +54,7 @@ filter_by_star(Label,Rating,Threshold):-
     site_star(Label,Rating), Rating>=Threshold.
 
 filter_by_cost(Label, Cost, Threshold) :-
-    site_cost(Label, Cost), Cost>=Threshold.
+    site_cost(Label, Cost), Cost<=Threshold.
 
 free_entry(Label, Cost) :-
     site_cost(Label, Cost), Cost=0.0.
