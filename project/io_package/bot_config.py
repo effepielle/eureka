@@ -7,12 +7,18 @@ import telebot
 
 
 BOT_NAME = "EUREKA"
-IMAGE_PLACEHOLDER = 'https://cdn.dribbble.com/users/1004013/screenshots/16268886/media/f9564be2057af9d0abd61fecf2f6699a.jpg'
-
+IMAGE_PLACEHOLDER = (
+    'https://cdn.dribbble.com/users/'
+    '1004013/screenshots/16268886/media/'
+    'f9564be2057af9d0abd61fecf2f6699a.jpg'
+)
 
 MESSAGE_CONSTANTS = SimpleNamespace()
-MESSAGE_CONSTANTS.CANNOT_UNDERSTAND = "I don't think I understand, could you choose from the options below?",
-MESSAGE_CONSTANTS.CHOOSE_CATEGORY = "Let's start by choosing a category",
+MESSAGE_CONSTANTS.CANNOT_UNDERSTAND = (
+    "I don't think I understand, "
+    "could you choose from the options below?"
+)
+MESSAGE_CONSTANTS.CHOOSE_CATEGORY = "Let's start by choosing a category"
 MESSAGE_CONSTANTS.SHOW_RESULTS = "🔍 Show me the results"
 
 CATEGORIES_LABELS = SimpleNamespace()
@@ -20,18 +26,35 @@ CATEGORIES_LABELS.ARTS_AND_CULTURE = "🏺 Arts & Culture"
 CATEGORIES_LABELS.ARCHITECTURE = "🏛️ Architecture"
 CATEGORIES_LABELS.GREEN_AREAS = "🌲 Green Areas"
 
-ADDITIONAL_FILTERS = SimpleNamespace()
-ADDITIONAL_FILTERS.ACCESSIBILITY = "♿ Accessibility"
-ADDITIONAL_FILTERS.STAR_RATING = "⭐ Rating"
-ADDITIONAL_FILTERS.PRICES = "💶 Prices"
+Accessibility = namedtuple(
+    "Accessibility", [
+        "display_name",
+        "query_if_filter_is_toggled_on",
+        "value"
+    ],
+    defaults=[None]
+)
 
+StarRating = namedtuple("StarRating", ["display_name", "value"], defaults=[None])
+Prices = namedtuple(
+    "Prices",
+    ["display_name", "value"],
+    defaults=[None]
+)
+QueryParameter = namedtuple("QueryParameter", ["label", "value"])
+QUERY_BUILDER = SimpleNamespace()
+QUERY_BUILDER.ADDITIONAL_FILTERS = SimpleNamespace()
+QUERY_BUILDER.ADDITIONAL_FILTERS.ACCESSIBILITY = Accessibility("♿ Accessibility")
+QUERY_BUILDER.ADDITIONAL_FILTERS.STAR_RATING = StarRating("⭐ Star Rating")
+QUERY_BUILDER.ADDITIONAL_FILTERS.PRICES = Prices("💶 Prices")
+QUERY_BUILDER.SITE_TYPE = None
 Subcategory = namedtuple("Subcategory", ["display_name", "label"])
 
 SUBCATEGORIES = dict()
 SUBCATEGORIES["ARTS_AND_CULTURE"] = SimpleNamespace()
 SUBCATEGORIES["ARTS_AND_CULTURE"].MUSEUMS = Subcategory("🏛️ Museums", "museum")
 SUBCATEGORIES["ARTS_AND_CULTURE"].THEATRES = Subcategory("🎪 Theatres", "theatre")
-SUBCATEGORIES["ARTS_AND_CULTURE"].ARTS_VENUES = Subcategory("🎨 Art venues", "art_venue")
+SUBCATEGORIES["ARTS_AND_CULTURE"].ART_VENUES = Subcategory("🎨 Art venues", "art_venue")
 SUBCATEGORIES["ARTS_AND_CULTURE"].LIBRARIES = Subcategory("📚 Libraries", "library")
 SUBCATEGORIES["ARCHITECTURE"] = SimpleNamespace()
 SUBCATEGORIES["ARCHITECTURE"].CHURCHES = Subcategory("⛪ Churches", "church_building")
