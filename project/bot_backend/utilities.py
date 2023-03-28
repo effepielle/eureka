@@ -40,30 +40,69 @@ def convert_to_label(user_choice):
         "🧱 City Walls": "city_walls",
         "🏙️ Squares": "square", 
         "🏛️ Museums": "museum",
-        "🗽 Monuments": "monument"
-        #TODO: add more items
+        "🗽 Monuments": "monument",
+        "🏘️ Palaces": "palace",
+        "🗼 Towers": "tower",
+        "🌉 Bridges": "bridge",
+        "🚪 City gates": "city_gate",
+        "⚰️ Public cemeteries": "cemetery",
+        "📚 Libraries": "library",
+        "🎨 Art venues": "arts_venue",
+        "🎪 Theatres": "theater"
         #TODO: reset when user pushes back
     }
     return dict[user_choice]
 
 def generate_search_improvement_choices(dict):
     string = "Current choices: \n"
-    if dict["accessibility"] != "_":
-        if dict["accessibility"] == "wheelchair accessible":
+    dict_key = dict.keys()
+
+
+    if "accessibility_filter" in dict_key and "fact" in dict["accessibility_filter"]:
+        if dict["accessibility_filter"]["fact"] == "is_wheelchair_friendly":
             string += "Accessibility: wheelchair friendly\n"
         else:
             string += "Accessibility: wheelchair friendly & unfriendly\n"
     else:
         string += "Accessibility: N/A\n"
-    
-    #TODO: prices
 
-    if dict["stars"] != "Stars":
-        string += "Rating: {} star(s) \n".format(dict["stars"])
+
+    if "rating_filter" in dict_key and "fact" in dict["rating_filter"]:
+        string += f"Rating: {dict['rating_filter']['threshold']} star(s) \n"
     else:
         string += "Rating: all ratings\n"
-    
+
+
+    if "cost_filter" in dict_key and "fact" in dict["cost_filter"]:
+        if "free_entry" in dict["cost_filter"]["fact"]:
+            string += "Cost: Free entrance \n"
+        elif "filter_by_cost" in dict ["cost_filter"]["fact"]:
+            if "lower_threshold" and "upper_threshold" in dict["cost_filter"]:
+                string += f"Cost: {dict['cost_filter']['lower_threshold']} € - {dict['cost_filter']['upper_threshold']} € \n"
+            elif "threshold" in dict["cost_filter"]:
+                string += f"Cost: from {dict['cost_filter']['threshold']} € \n"
+    else:
+        string += "Cost: all costs \n"
+
+    #TODO
+    #if "timetable_filter" in dict_key and "fact" in dict["timetable_filter"]:
+    #    "Timetable: Mon-Sat, orario..."
+
     return string
+
+def clean_filter(dict):
+    dict_key = dict.keys()
+    if "accessibility_filter" in dict_key and "fact" in dict["accessibility_filter"]:
+        del dict["accessibility_filter"]
+    if "rating_filter" in dict_key and "fact" in dict["rating_filter"]:
+        del dict["rating_filter"]
+
+    if "cost_filter" in dict_key and "fact" in dict["cost_filter"]:
+        del dict["cost_filter"]
+
+    if "timetable_filter" in dict_key and "fact" in dict["timetable_filter"]:
+        del dict["timetable_filter"]
+
 
 def query_KB(query_parameters):
     query_string = ""

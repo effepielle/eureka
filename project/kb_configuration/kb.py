@@ -9,7 +9,7 @@ wikidata_dict = {
     "city_walls": "Q16748868",
     "church_building": "Q16970",
     "square": "Q174782",
-    "cultural_event": "Q58687420",
+    "cultural_event": "Q58687420", #TODO useless
     "museum":"Q33506",
     "monument":"Q4989906",
     "library": "Q7075",
