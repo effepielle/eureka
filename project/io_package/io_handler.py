@@ -37,7 +37,7 @@ SITES_LIST = ["🏞️ Parks", "🌿 Public Gardens", "🧱 City Walls",
         "⛪ Churches", "🏙️ Squares", "🏛️ Museums",
         "🏘️ Palaces", "🗽 Monuments", "🗼 Towers",
         "🌉 Bridges", "🚪 City gates", "⚰️Public cemeteries",
-              "📚 Libraries", "🎨 Art venues", "🎪 Theatres" ]
+              "📚 Libraries", "🎨 Art venues", "🎭 Theatres" ]
 '''
 
 CANNOT_UNDERSTAND_MESSAGE = "I don't think I understand, could you choose from the options below?"
@@ -48,7 +48,8 @@ SHOW_ME_THE_RESULTS = "🔍 Show me the results"
 ACCESSIBILITY = "♿ Accessibility"
 STAR_RATING = "⭐ Rating"
 PRICES = "💶 Prices" #FREE_ENTRY = "🆓 Free entry"
-TIMETABLE = "🕒 Timetables"
+HOURS = "🕒 Opening Hours"
+DAYS = "📅 Opening Days"
 
 #TODO based on wheater condition
 
@@ -60,16 +61,17 @@ GREEN_AREAS = "🌲 Green Areas"
 
 CATEGORIES_LIST = [ARTS_AND_CULTURE, ARCHITECTURE, GREEN_AREAS]
 SELECTED_CATEGORY = None
+SELECTED_ASSET_TYPE = None
 
 SUBCATEGORIES_DICT = {
-    "Arts_and_culture":["🏛️ Museums","🎪 Theatres","🎨 Art venues","📚 Libraries"],
+    "Arts_and_culture":["🏛️ Museums","🎭 Theatres","🎨 Art venues","📚 Libraries"],
     "Architecture":["⛪ Churches","🏘️ Palaces","🧱 City Walls",
                     "🗽 Monuments","🗼 Towers","🌉 Bridges","🚪 City gates",
                     "⚰️ Public cemeteries","🏙️ Squares"],
     "Green_areas":["🌿 Public Gardens", "🏞️ Parks"]
 }
 
-SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
 ORIGINAL_DIM_SEARCH_IMPROVEMENT = len(SEARCH_IMPROVEMENT_LIST)
 
 
@@ -86,7 +88,7 @@ def handle_conversation(message):
             f"Hello {message.chat.first_name}! "
             f"I'm {BOT_NAME} and I can help you discover cultural assets in Pisa.")
 
-    SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+    SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
 
     #clean the filters of KB query, because at the end of first successful interaction, we can digit /start and do another interaction,
     # but QUERY_PARAMETERS will be the same if not cleaned
@@ -162,14 +164,15 @@ def category_handler(message):
 
 # STEP 1: the user choice is handled
 def site_label_handler(message):
+    global SELECTED_ASSET_TYPE
     # if the message is a sub-category (churches, monuments, towers, etc.)
     if message.text in SUBCATEGORIES_DICT[SELECTED_CATEGORY]:
-
+        SELECTED_ASSET_TYPE = message.text
         QUERY_PARAMETERS["recommendation"]["fact"] = "recommended_cultural_asset"
 
         #go to addictional filter
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        create_keyboard(keyboard, [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE])
+        create_keyboard(keyboard, [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS])
         # In this way you can separate Show results and back buttons from the rest of the group
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -219,7 +222,7 @@ def search_improvements_handler(message):
         msg = bot.send_message(message.chat.id, "Are you in a wheelchair?", reply_markup=keyboard)
         bot.register_next_step_handler(msg, accessibility_choice_handler)
 
-    # TODO
+
     elif message.text == PRICES:
         create_keyboard(keyboard, ["FREE ENTRY", "1.00 € - 5.00 €", "FROM 5.00 €"])
         keyboard.add(types.KeyboardButton(BACK))
@@ -233,13 +236,20 @@ def search_improvements_handler(message):
         msg = bot.send_message(message.chat.id, "Choose a minimum rating!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, rating_choice_handler)
 
-    # TODO
-    elif message.text == TIMETABLE:
+
+    elif message.text == DAYS:
 
         create_keyboard(keyboard, ["Weekdays (Mon-Sat)", "Sunday and Holidays"])
         keyboard.add(types.KeyboardButton(BACK))
         msg = bot.send_message(message.chat.id, "Choose your desired days!", reply_markup=keyboard)
         bot.register_next_step_handler(msg, timetable_day_choice_handler)
+
+    elif message.text == HOURS:
+
+        create_keyboard(keyboard, ["9:00 - 12:00", "13:00 - 19:00"])
+        keyboard.add(types.KeyboardButton(BACK))
+        msg = bot.send_message(message.chat.id, "Choose your time for your visit!", reply_markup=keyboard)
+        bot.register_next_step_handler(msg, timetable_hours_choice_handler)
 
     #TODO update everything
     elif message.text == SHOW_ME_THE_RESULTS:
@@ -259,7 +269,7 @@ def search_improvements_handler(message):
             bot.register_next_step_handler(msg, category_handler)
 
         else:
-            SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+            SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
             create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
             keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
             keyboard.add(types.KeyboardButton(BACK))
@@ -268,12 +278,12 @@ def search_improvements_handler(message):
                     "I can improve the search or show you the results. What can I do?",
                     reply_markup=keyboard
             )
-            bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+            bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS),  parse_mode="markdown")
             bot.register_next_step_handler(msg, search_improvements_handler)
 
 
     else:
-        create_keyboard(keyboard, [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE])
+        create_keyboard(keyboard, [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS])
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
 
@@ -327,7 +337,7 @@ def accessibility_choice_handler(message):
     elif message.text == BACK:
 
         #need to roll back the updates
-        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -335,7 +345,7 @@ def accessibility_choice_handler(message):
         msg = bot.send_message(message.chat.id,
                 "I can improve the search or show you the results. What can I do?",
                 reply_markup=keyboard)
-        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS), parse_mode="markdown")
         bot.register_next_step_handler(msg, search_improvements_handler)
 
 
@@ -382,8 +392,8 @@ def prices_choice_handler(message):
     elif message.text == "1.00 € - 5.00 €":
 
         QUERY_PARAMETERS["cost_filter"]["fact"] = "filter_by_cost"
-        QUERY_PARAMETERS["cost_filter"]["lower_threshold"] = 1.0
-        QUERY_PARAMETERS["cost_filter"]["upper_threshold"] = 5.0
+        QUERY_PARAMETERS["cost_filter"]["lower_threshold"] = "1.0"
+        QUERY_PARAMETERS["cost_filter"]["upper_threshold"] = "5.0"
 
         SEARCH_IMPROVEMENT_LIST.remove(PRICES)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
@@ -400,7 +410,7 @@ def prices_choice_handler(message):
     elif message.text == "FROM 5.00 €":
 
         QUERY_PARAMETERS["cost_filter"]["fact"] = "filter_by_cost"
-        QUERY_PARAMETERS["cost_filter"]["threshold"] = 5.0
+        QUERY_PARAMETERS["cost_filter"]["threshold"] = "5.0"
 
         SEARCH_IMPROVEMENT_LIST.remove(PRICES)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
@@ -416,7 +426,7 @@ def prices_choice_handler(message):
     elif message.text == BACK:
 
         # need to roll back the updates
-        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -424,7 +434,7 @@ def prices_choice_handler(message):
         msg = bot.send_message(message.chat.id,
                                "I can improve the search or show you the results. What can I do?",
                                reply_markup=keyboard)
-        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS),  parse_mode="markdown")
         bot.register_next_step_handler(msg, search_improvements_handler)
 
 
@@ -451,7 +461,7 @@ def rating_choice_handler(message):
     if "⭐" in message.text:
 
         QUERY_PARAMETERS["rating_filter"]["fact"] = "filter_by_star"
-        QUERY_PARAMETERS["rating_filter"]["threshold"] = message.text.count("⭐")
+        QUERY_PARAMETERS["rating_filter"]["threshold"] = f"{message.text.count('⭐')}"
 
         SEARCH_IMPROVEMENT_LIST.remove(STAR_RATING)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
@@ -464,7 +474,7 @@ def rating_choice_handler(message):
         )
         bot.register_next_step_handler(msg, search_improvements_handler)
     elif message.text == BACK:
-        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -473,7 +483,7 @@ def rating_choice_handler(message):
                 "I can improve the search or show you the results. What can I do?",
                 reply_markup=keyboard
         )
-        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS),  parse_mode="markdown")
         bot.register_next_step_handler(msg, search_improvements_handler)
     else:
         create_keyboard(keyboard, [i * "⭐" for i in range(1, 6)])
@@ -497,33 +507,50 @@ def timetable_day_choice_handler(message):
         QUERY_PARAMETERS["timetable_filter"]["fact"]["days"] = "weekday"
         QUERY_PARAMETERS["timetable_filter"]["day"] = "Day"
 
-        create_keyboard(keyboard, ["8-13 A.M.", "14-19 P.M."])
+        # if a range of hours not already selected
+        if "hours" not in QUERY_PARAMETERS["timetable_filter"]["fact"]:
+            QUERY_PARAMETERS["timetable_filter"]["fact"]["hours"] = "site_timetable"
+            QUERY_PARAMETERS["timetable_filter"]["opening"] = "Opening"
+            QUERY_PARAMETERS["timetable_filter"]["closing"] = "Closing"
+
+        SEARCH_IMPROVEMENT_LIST.remove(DAYS)
+
+        create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
+        keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
 
         msg = bot.send_message(message.chat.id,
-                               "Please select the desired times for your visit",
+                               "Want to add more preferences?",
                                reply_markup=keyboard
                                )
-        bot.register_next_step_handler(msg, timetable_hours_choice_handler)
+        bot.register_next_step_handler(msg, search_improvements_handler)
 
     elif "Sunday and Holidays" in message.text:
         QUERY_PARAMETERS["timetable_filter"]["fact"]["days"] = "holiday"
         QUERY_PARAMETERS["timetable_filter"]["day"] = "Day"
 
-        create_keyboard(keyboard, ["8-13 A.M.", "14-19 P.M."])
+        # if a range of hours not already selected
+        if "hours" not in QUERY_PARAMETERS["timetable_filter"]["fact"]:
+            QUERY_PARAMETERS["timetable_filter"]["fact"]["hours"] = "site_timetable"
+            QUERY_PARAMETERS["timetable_filter"]["opening"] = "Opening"
+            QUERY_PARAMETERS["timetable_filter"]["closing"] = "Closing"
+
+        SEARCH_IMPROVEMENT_LIST.remove(DAYS)
+
+        create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
+        keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
 
-
         msg = bot.send_message(message.chat.id,
-                               "Please select the desired times for your visit",
+                               "Want to add more preferences?",
                                reply_markup=keyboard
                                )
-        bot.register_next_step_handler(msg, timetable_hours_choice_handler)
+        bot.register_next_step_handler(msg, search_improvements_handler)
 
 
     elif message.text == BACK:
 
-
+        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -533,7 +560,7 @@ def timetable_day_choice_handler(message):
                                reply_markup=keyboard
                                )
 
-        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS),  parse_mode="markdown")
         bot.register_next_step_handler(msg, search_improvements_handler)
 
     else:
@@ -542,21 +569,29 @@ def timetable_day_choice_handler(message):
         msg = bot.send_message(message.chat.id, CANNOT_UNDERSTAND_MESSAGE, reply_markup=keyboard)
         bot.register_next_step_handler(msg, timetable_day_choice_handler)
 
-
+#STEP 2.5: checks user's hours preferences about cultural assets
 def timetable_hours_choice_handler(message):
     global SEARCH_IMPROVEMENT_LIST
     global QUERY_PARAMETERS
 
-    QUERY_PARAMETERS["timetable_filter"]["fact"]["hours"] = "filter_by_timetable"
+    if "timetable_filter" not in QUERY_PARAMETERS:
+        QUERY_PARAMETERS["timetable_filter"] = dict()
+        QUERY_PARAMETERS["timetable_filter"]["label"] = QUERY_PARAMETERS["recommendation"]["label"]
+        QUERY_PARAMETERS["timetable_filter"]["fact"]=dict()
+
+
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 
-    if "8-13 A.M." in message.text:
+    if "9:00 - 12:00" in message.text:
+        QUERY_PARAMETERS["timetable_filter"]["fact"]["hours"] = "filter_by_timetable"
+        QUERY_PARAMETERS["timetable_filter"]["day"] = "Day"
+        QUERY_PARAMETERS["timetable_filter"]["opening"] = "Opening"
+        QUERY_PARAMETERS["timetable_filter"]["closing"] = "Closing"
+        QUERY_PARAMETERS["timetable_filter"]["selected_opening"] = "9.0"
+        QUERY_PARAMETERS["timetable_filter"]["selected_closing"] = "12.0"
 
-        QUERY_PARAMETERS["timetable_filter"]["selected_opening"] = 8.0
-        QUERY_PARAMETERS["timetable_filter"]["selected_closing"] = 13.0
-
-        SEARCH_IMPROVEMENT_LIST.remove(TIMETABLE)
+        SEARCH_IMPROVEMENT_LIST.remove(HOURS)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -567,12 +602,16 @@ def timetable_hours_choice_handler(message):
                                )
         bot.register_next_step_handler(msg, search_improvements_handler)
 
-    elif "14-19 P.M." in message.text:
+    elif "13:00 - 19:00" in message.text:
+        QUERY_PARAMETERS["timetable_filter"]["fact"]["hours"] = "filter_by_timetable"
+        QUERY_PARAMETERS["timetable_filter"]["day"] = "Day"
+        QUERY_PARAMETERS["timetable_filter"]["opening"] = "Opening"
+        QUERY_PARAMETERS["timetable_filter"]["closing"] = "Closing"
+        QUERY_PARAMETERS["timetable_filter"]["selected_opening"] = "13.0"
+        QUERY_PARAMETERS["timetable_filter"]["selected_closing"] = "19.0"
 
-        QUERY_PARAMETERS["timetable_filter"]["selected_opening"] = 14.0
-        QUERY_PARAMETERS["timetable_filter"]["selected_closing"] = 19.0
 
-        SEARCH_IMPROVEMENT_LIST.remove(TIMETABLE)
+        SEARCH_IMPROVEMENT_LIST.remove(HOURS)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -584,7 +623,8 @@ def timetable_hours_choice_handler(message):
         bot.register_next_step_handler(msg, search_improvements_handler)
 
     elif message.text == BACK:
-        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, TIMETABLE]
+
+        SEARCH_IMPROVEMENT_LIST = [ACCESSIBILITY, STAR_RATING, PRICES, DAYS, HOURS]
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
         keyboard.add(types.KeyboardButton(SHOW_ME_THE_RESULTS))
         keyboard.add(types.KeyboardButton(BACK))
@@ -593,21 +633,25 @@ def timetable_hours_choice_handler(message):
                                "I can improve the search or show you the results. What can I do?",
                                reply_markup=keyboard
                                )
-        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS))
+        bot.send_message(message.chat.id, generate_search_improvement_choices(QUERY_PARAMETERS),  parse_mode="markdown")
         bot.register_next_step_handler(msg, search_improvements_handler)
     else:
-        create_keyboard(keyboard, ["8-13 A.M.", "14-19 P.M."])
+        create_keyboard(keyboard, ["9:00 - 12:00", "13:00 - 19:00"])
         keyboard.add(types.KeyboardButton(BACK))
         msg = bot.send_message(message.chat.id, CANNOT_UNDERSTAND_MESSAGE, reply_markup=keyboard)
         bot.register_next_step_handler(msg, timetable_hours_choice_handler)
+
+
+
 
 # FINAL STEP: show query result
 def show_results_handler(message):
     global QUERY_PARAMETERS
     global MAIN_QUERY_RESULTS
-    #TODO implementare anche il filtro in base al tempo, indoor/outdoor
 
-    query_string = query_KB(QUERY_PARAMETERS)
+    bad_weather = is_wheather_bad()
+    asset_type = convert_to_label(SELECTED_ASSET_TYPE)
+    query_string = query_KB(QUERY_PARAMETERS, asset_type, bad_weather)
     subdir = re.sub("eureka.*", "eureka", os.getcwd())
     os.chdir(subdir)
 
@@ -619,54 +663,92 @@ def show_results_handler(message):
             prolog_thread.query("consult(\"project/kb_configuration/KB.pl\")")
 
             MAIN_QUERY_RESULTS = prolog_thread.query(query_string)
+
+
             #if no results are found or if it's T/F query
             if isinstance(MAIN_QUERY_RESULTS, bool):
                 if MAIN_QUERY_RESULTS:
-                    # TODO: evaluate if the bot need to do something when the result is True
                     bot.send_message(message.chat.id, f"{MAIN_QUERY_RESULTS}")
                 else:
                     bot.send_message(message.chat.id,
                             could_not_find_matches_msg,
                             reply_markup=types.ReplyKeyboardRemove()
                     )
-            else: #MAIN_QUERY_RESULTS is a list of dictonaries
+            # MAIN_QUERY_RESULTS is a list of dictonaries
+            else:
+
                 if MAIN_QUERY_RESULTS:
+
+                    #remove duplicate and formatting from results
+                    MAIN_QUERY_RESULTS = clean_results(MAIN_QUERY_RESULTS)
+
+                    weather_message = ""
+                    if bad_weather:
+                        weather_message = "\nSince it will rain, I already filter for you some nice indoor places to visit 😇.\n"
+
+
                     bot.send_message(message.chat.id,
-                            "Here are some nice results tailored for your preferences. "
+                            f"Here are some nice results tailored for your preferences. {weather_message}"
                             "To make another search press /start again!",
                             reply_markup=types.ReplyKeyboardRemove()
                     )
 
-                    if MAIN_QUERY_RESULTS[0]["Image"] == "nan":
+                    if MAIN_QUERY_RESULTS[0]["Image"] == "":
                         image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
                     else:
-                        image = image_downloader(MAIN_QUERY_RESULTS[0]["Id"],
+                        image = image_downloader(MAIN_QUERY_RESULTS[0]["Label"],
                                 MAIN_QUERY_RESULTS[0]["Image"]
                         )
+                        # if image too big, will not be loaded
+                        if os.path.isfile(image) == False:
+                            image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
 
                     #Prolog shows only dict of unified free vars, fixed value on Prolog query isn't
                     # shown todo with all possible fixable values of the query
-                    # but in the script we excluded query with:
-                    # TripID, Image, Lat, Lon instantiable and accessibility is set "_" by default
-                    if "Star" in MAIN_QUERY_RESULTS[0]:
+
+                    if "Rating" in MAIN_QUERY_RESULTS[0]:
                         caption = (
                                 f"*{MAIN_QUERY_RESULTS[0]['Label']}*. "
-                                "It has been reviewed by users with "
-                                f"{MAIN_QUERY_RESULTS[0]['Star']} star(s)."
+                                "\n\nIt has been reviewed by users with "
+                                f"{MAIN_QUERY_RESULTS[0]['Rating']} star(s).\n"
                         )
-                    else:
-                        caption = (
-                                f"*{MAIN_QUERY_RESULTS[0]['Label']}*. "
-                                "It has been reviewed by users with "
-                                f"{QUERY_PARAMETERS['stars']} star(s)."
-                        )
-                    if MAIN_QUERY_RESULTS[0]["TripID"] != "nan":
+
+                    if MAIN_QUERY_RESULTS[0]["Cost"] != -1.0:
+                        if MAIN_QUERY_RESULTS[0]["Cost"] == 0.0:
+                            caption += (
+                                f"The entrance is free!\n"
+                            )
+                        else:
+                            caption += (
+                                    f"The ticket cost is "
+                                    f"{MAIN_QUERY_RESULTS[0]['Cost']} €.\n"
+                            )
+
+                    if 'OpeningDays' in MAIN_QUERY_RESULTS[0]:
+
+                        full_caption = ""
+                        for dicti in MAIN_QUERY_RESULTS[0]['OpeningDays']:
+
+                            hours_caption = ""
+                            for hour in dicti['OpeningHours']:
+                                hours_caption += hour.replace(".",":").replace(":0",":00").replace(":3",":30")
+                                hours_caption += " "
+                            full_caption += f"*{dicti['Day']}* :  {hours_caption}\n"
+
                         caption += (
-                                " Check out what users say on "
+                            f"The opening days with the corresponding opening hours are the followings:\n"
+                            f"{full_caption}\n"
+                        )
+
+                    if MAIN_QUERY_RESULTS[0]["TripID"] != "":
+                        caption += (
+                                "Check out what users say on "
                                 "[Tripadvisor]"
                                 f"(https://tripadvisor.com/{str(MAIN_QUERY_RESULTS[0]['TripID'])})!"
                         )
                     keyboard = types.InlineKeyboardMarkup()
+
+                    #TODO aggiungere controllo altrimenti stampa + volte la location
                     keyboard.add(types.InlineKeyboardButton("📍 Get Location",
                             callback_data=(
                                     "coordinates_"
@@ -702,38 +784,72 @@ def carousel(call):
     index = int(call.data[4:].split('_')[1])
     keyboard = types.InlineKeyboardMarkup()
 
-    if MAIN_QUERY_RESULTS[index]["Image"] == "nan":
+    if MAIN_QUERY_RESULTS[index]["Image"] == "":
         image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
     else:
-        image = image_downloader(MAIN_QUERY_RESULTS[index]["Id"],
-                        MAIN_QUERY_RESULTS[index]["Image"])
 
-    caption = f"*{MAIN_QUERY_RESULTS[index]['Label']}*. "
+        image = image_downloader(MAIN_QUERY_RESULTS[index]["Label"],
+                                 MAIN_QUERY_RESULTS[index]["Image"]
+                                 )
+        #if image too big, will not be loaded
+        if os.path.isfile(image) == False:
+            image = image_downloader("PLACEHOLDER", IMAGE_PLACEHOLDER)
 
-    # Prolog shows only dict of unified free vars, fixed value on Prolog query isn't shown todo
-    # with all possible fixable values of the query but in the script we excluded query with:
-    # TripID, Image, Lat, Lon instantiable and accessibility is set "_" by default
-    if "Star" in MAIN_QUERY_RESULTS[index]:
-        caption += f" It has been reviewed by users with {MAIN_QUERY_RESULTS[index]['Star']} star(s)."
-    else:
+    # Prolog shows only dict of unified free vars, fixed value on Prolog query isn't
+    # shown todo with all possible fixable values of the query
+
+    if "Rating" in MAIN_QUERY_RESULTS[index]:
         caption = (
-                f"*{MAIN_QUERY_RESULTS[index]['Label']}*. "
-                f"It has been reviewed by users with {QUERY_PARAMETERS['stars']} star(s)."
+            f"*{MAIN_QUERY_RESULTS[index]['Label']}*. "
+            "\n\nIt has been reviewed by users with "
+            f"{MAIN_QUERY_RESULTS[index]['Rating']} star(s).\n"
         )
 
-    if MAIN_QUERY_RESULTS[index]["TripID"] != "nan":
+    if MAIN_QUERY_RESULTS[index]["Cost"] != -1.0:
+        if MAIN_QUERY_RESULTS[0]["Cost"] == 0.0:
+            caption += (
+                f"The entrance is free!\n"
+            )
+        else:
+            caption += (
+                f"The ticket cost is "
+                f"{MAIN_QUERY_RESULTS[index]['Cost']} €.\n"
+            )
+
+    if 'OpeningDays' in MAIN_QUERY_RESULTS[index]:
+
+        full_caption = ""
+        for dicti in MAIN_QUERY_RESULTS[index]['OpeningDays']:
+
+            hours_caption = ""
+            for hour in dicti['OpeningHours']:
+                hours_caption += hour.replace(".", ":").replace(":0",":00").replace(":3",":30")
+                hours_caption += " "
+            full_caption += f"*{dicti['Day']}* :  {hours_caption} "
+
         caption += (
-                " Check out what users say on [Tripadvisor]"
-                f"(https://tripadvisor.com/{str(MAIN_QUERY_RESULTS[index]['TripID'])})!"
+            f"The opening days with the corresponding opening hours are the followings:\n"
+            f"{full_caption}\n"
         )
 
-    keyboard.add(
-            types.InlineKeyboardButton("📍 Get Location", callback_data=(
-                    f"coordinates_{MAIN_QUERY_RESULTS[index]['Lat']}"
-                    f"_{MAIN_QUERY_RESULTS[index]['Lon']}"
-                    f"_{str(index)}"
-            ))
-    )
+    if MAIN_QUERY_RESULTS[index]["TripID"] != "":
+        caption += (
+            "Check out what users say on "
+            "[Tripadvisor]"
+            f"(https://tripadvisor.com/{str(MAIN_QUERY_RESULTS[index]['TripID'])})!"
+        )
+    keyboard = types.InlineKeyboardMarkup()
+    keyboard.add(types.InlineKeyboardButton("📍 Get Location",
+                                            callback_data=(
+                                                "coordinates_"
+                                                f"{MAIN_QUERY_RESULTS[index]['Lat']}"
+                                                f"_{MAIN_QUERY_RESULTS[index]['Lon']}"
+                                                f"_{str(index)}")
+                                            )
+                 )
+
+
+
     if index == 0:
         keyboard.add(types.InlineKeyboardButton('Next' , callback_data='item_1'))
     elif index == len(MAIN_QUERY_RESULTS) - 1:
@@ -757,7 +873,5 @@ def send_asset_location(call):
             f"This is the location for *{MAIN_QUERY_RESULTS[index]['Label']}*.",
             parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
     bot.send_location(call.message.chat.id, latitude=lat, longitude=lon)
-
-#TODO: check wheater condition with the dedicated method and make a query for indoor/outdoor (e.g bad weather -> indoor) and show another carousel of results with a message like Since today it's rainy here it is some results...
 
 bot.infinity_polling()
