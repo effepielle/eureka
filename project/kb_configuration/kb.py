@@ -9,7 +9,7 @@ wikidata_dict = {
     "city_walls": "Q16748868",
     "church_building": "Q16970",
     "square": "Q174782",
-    "cultural_event": "Q58687420",
+    "cultural_event": "Q58687420", #TODO useless
     "museum":"Q33506",
     "monument":"Q4989906",
     "library": "Q7075",
@@ -23,28 +23,57 @@ wikidata_dict = {
 }
 
 def wikidata_make_query(wikidata_id):
-    return """
-    SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
-    {
-    SELECT DISTINCT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage
-    WHERE
-    {       
-    ?site wdt:P131 wd:Q13375;
-            wdt:P31/wdt:P279* wd:""" + wikidata_id + """;
-            p:P625 ?siteCoordinates;
-    OPTIONAL {?site wdt:P2846 ?siteAccessibility.}
-    OPTIONAL {?site wdt:P3134 ?siteTripAdvisorId.}
-    OPTIONAL {?site wdt:P18 ?siteImage.}
 
-    ?siteCoordinates psv:P625 ?coordinate_node.
-    ?coordinate_node wikibase:geoLongitude ?siteLon.
-    ?coordinate_node wikibase:geoLatitude ?siteLat.
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "en"}.
-    }
-    }
-    FILTER (!REGEX(?siteLabel, "^Q[0-9]+$"))
-    }
-    """
+    #city_walls don't have position
+    if wikidata_id == "Q16748868":
+        return """
+        SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
+        {
+        SELECT DISTINCT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage
+        WHERE
+        {       
+        ?site wdt:P131 wd:Q13375;
+                wdt:P31/wdt:P279* wd:""" + wikidata_id + """.
+        OPTIONAL {
+                  ?site p:P625 ?siteCoordinates.
+                  ?siteCoordinates psv:P625 ?coordinate_node.
+                  ?coordinate_node wikibase:geoLongitude ?siteLon;
+                                   wikibase:geoLatitude ?siteLat.
+                 }
+        OPTIONAL {?site wdt:P2846 ?siteAccessibility.}
+        OPTIONAL {?site wdt:P3134 ?siteTripAdvisorId.}
+        OPTIONAL {?site wdt:P18 ?siteImage.}
+    
+        
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en"}.
+        }
+        }
+        FILTER (!REGEX(?siteLabel, "^Q[0-9]+$"))
+        } ORDER BY DESC(?siteLabel) LIMIT 1
+        """
+    else:
+        return """
+        SELECT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage{
+        {
+        SELECT DISTINCT ?site ?siteLabel ?siteLat ?siteLon ?siteAccessibilityLabel ?siteTripAdvisorIdLabel ?siteImage
+        WHERE
+        {       
+        ?site wdt:P131 wd:Q13375;
+                wdt:P31/wdt:P279* wd:""" + wikidata_id + """;
+                p:P625 ?siteCoordinates;
+        OPTIONAL {?site wdt:P2846 ?siteAccessibility.}
+        OPTIONAL {?site wdt:P3134 ?siteTripAdvisorId.}
+        OPTIONAL {?site wdt:P18 ?siteImage.}
+    
+        ?siteCoordinates psv:P625 ?coordinate_node.
+        ?coordinate_node wikibase:geoLongitude ?siteLon.
+        ?coordinate_node wikibase:geoLatitude ?siteLat.
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en"}.
+        }
+        }
+        FILTER (!REGEX(?siteLabel, "^Q[0-9]+$"))
+        }
+        """
 
 def daticultura_make_query():
     return """
@@ -172,13 +201,19 @@ def init(filename, rules_file=None):
         for site_name, site_wikidata_id in wikidata_dict.items():
             q = wikidata_make_query(site_wikidata_id)
             results = wikidata.query(q)
+            #city walls doesn't have coordinates, added coordinate of main entrance
+            if site_wikidata_id == "Q16748868":
+                results.df["siteLat.type"] = 'literal'
+                results.df["siteLat.value"] = "43.72452940120137"
+                results.df["siteLon.type"] = 'literal'
+                results.df["siteLon.value"] = '10.393724768399192'
 
             # site label predicates
             results.predicate("label", "site", "siteLabel", v_dict=v_dict) \
                     .build()
 
             # site geoposition predicates
-            results.predicate("position", "site", "siteLon", "siteLat",
+            results.predicate("position", "site", "siteLat", "siteLon",
                     k_dict={"siteLon": 'float', "siteLat": 'float'},
                     v_dict=v_dict) \
                             .unique("site") \
