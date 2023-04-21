@@ -1,10 +1,4 @@
-
-%use table to store same facts repeated
-% if infinite loop, uncomment (dynamic program like fix) :- table
-% label/2,position/3,type/2,star/2,image/2,trip_advisor/2.
-
-
-%utilities to help to compose final reccomandation
+%utilities to help to compose final recommendation
 site_label(Label):-
     label(_,Label).
 
@@ -28,7 +22,6 @@ site_tripadvisor(Label, TripID):-
 site_cost(Label,Cost) :-
     label(Id,Label), ticket_cost(Id,Cost).
 
-
 site_timetable(Label, Day, Opening, Closing) :- label(Id,Label), timetable_info(Id,Day,Opening, Closing).
 
 weekday(Day) :- (Day="monday";Day="tuesday";Day="wednesday";Day="thursday"; Day="friday";Day="saturday").
@@ -44,11 +37,11 @@ site_optional_info(Label, Image, TripID, Cost) :- site_label(Label),
 ( (site_tripadvisor(Label, TripID) , \+TripID = "") ; (\+site_tripadvisor(Label, TripID) , TripID = "") ),
 ( (site_cost(Label, Cost) , \+Cost = -1.0) ; (\+site_cost(Label, Cost), Cost = -1.0)).
 
-%rules to directly compose the final reccomendation
+%rules to directly compose the final recommendation
 recommended_cultural_asset(Label, Lat, Lon, Rating, Image, TripID, Cost):- site_mandatory_info(Label,Lat,Lon,Rating), site_optional_info(Label, Image, TripID, Cost).
 
 
-%filters to apply to final reccomendation
+%filters to apply to final recommendation
 filter_by_star(Label,Rating,Threshold):-
     site_star(Label,Rating), Rating>=Threshold.
 
@@ -85,8 +78,10 @@ is_outdoor(Label):-
 visitable_if_raining(Label):-
     is_indoor(Label).
 
-%visitable_if_good_weather(Label):-
-%    is_outdoor(Label); is_indoor(Label).
+%KB evaluation rule, for test purposes only
+site_optional_info(Label, Image, TripID) :- site_label(Label),
+    ((site_image(Label, Image) , \+Image = "" ) ; (\+site_image(Label, Image) , Image = "" )),
+( (site_tripadvisor(Label, TripID) , \+TripID = "") ; (\+site_tripadvisor(Label, TripID) , TripID = "") ).
 
 
 

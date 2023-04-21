@@ -137,3 +137,4 @@ dmypy.json
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+project/bot_backend/img/
