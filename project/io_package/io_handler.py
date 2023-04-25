@@ -14,8 +14,6 @@ from project.bot_backend.utilities import *
 
 
 
-# TODO: try to move
-
 # dictionary that contains the initial query parameters
 QUERY_PARAMETERS = {
     "recommendation":
@@ -474,6 +472,13 @@ def prices_choice_handler(message):
 
         QUERY_PARAMETERS["cost_filter"]["fact"] = "filter_by_cost"
         QUERY_PARAMETERS["cost_filter"]["threshold"] = "5.0"
+
+        # remove the price filter from the search improvement list if set before
+        if "lower_threshold" in QUERY_PARAMETERS["cost_filter"]:
+            del QUERY_PARAMETERS["cost_filter"]["lower_threshold"]
+        if "upper_threshold" in QUERY_PARAMETERS["cost_filter"]:
+            del QUERY_PARAMETERS["cost_filter"]["upper_threshold"]
+
 
         SEARCH_IMPROVEMENT_LIST.remove(PRICES)
         create_keyboard(keyboard, SEARCH_IMPROVEMENT_LIST)
