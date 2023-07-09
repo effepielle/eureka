@@ -17,9 +17,11 @@ git clone https://github.com/effepielle/eureka
 ```bash
 pip install -r requirements.txt
 ```
-3. Run the file ```io_handler.py```. The default file location is ```project/io_package/io_handler.py```
+3. Put your own Telgram Bot token in ```config_files/config.py```. You can get a token using the [BotFather](https://t.me/botfather). In addition, you can request a token directly from the authors of this project to be able to use the [official instance of the chatbot](https://t.me/eurekachatbot).
 
-4. Start the Telegram chatbot at the following [link](https://t.me/eurekachatbot).
+4. Run the file ```io_handler.py```. The default file location is ```project/io_package/io_handler.py```
+
+5. Start EUREKA chatbot. You can reach it at the following [link](https://t.me/eurekachatbot).
 
 
 
