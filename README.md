@@ -23,6 +23,9 @@ pip install -r requirements.txt
 
 5. Start EUREKA chatbot. You can reach it at the following [link](https://t.me/eurekachatbot).
 
+## TODO
+- [ ] Entire Codebase Refactoring
+
 
 
 
